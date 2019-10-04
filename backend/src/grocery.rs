@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
 
-#[derive(Serialize, Deserialize)]
-pub struct Grocery<'a> {
-    pub name: &'a str,
+#[derive(Serialize, Deserialize, FromForm)]
+pub struct Grocery {
+    pub name: String,
 }
 
 
-impl<'a> Grocery<'a> {
+impl Grocery {
 
 }
 

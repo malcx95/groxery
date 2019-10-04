@@ -4,9 +4,10 @@
   "description": "A simple example deployed using react-codesandboxer",
   "main": "index.js",
   "dependencies": {
-    "react-router-dom": "latest",
+    "axios": "^0.19.0",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-router-dom": "latest"
   },
   "devDependencies": {
     "react-scripts": "^3.1.2"
