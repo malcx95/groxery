@@ -5,11 +5,23 @@ export class Home extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {currName: ''};
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   handleSubmit(event) {
-    createGrocery('kebaben');
+    createGrocery(this.state.currName).then(
+      data => console.log(data)
+    ).catch(
+      error => console.error(error)
+    );
     event.preventDefault();
+  }
+
+  handleChange(event) {
+    this.setState({currName: event.target.value});
   }
 
   render() {
@@ -20,7 +32,11 @@ export class Home extends React.Component {
 
         <form onSubmit={this.handleSubmit}>
           <label>Name:
-            <input type="text" name="name" />
+            <input
+              type="text"
+              name="name"
+              value={this.state.currName}
+              onChange={this.handleChange}/>
           </label>
           <input type="submit" value="Submit"/>
         </form>

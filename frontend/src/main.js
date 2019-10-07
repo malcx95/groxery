@@ -4,9 +4,11 @@ import { Home } from "./home";
 
 class Groxery extends React.Component {
 
+  /*
   constructor(props) {
     super(props);
   }
+  */
   
   render() {
     return (

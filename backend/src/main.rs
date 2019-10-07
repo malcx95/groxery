@@ -2,7 +2,6 @@
 
 #[macro_use] extern crate rocket;
 use std::vec;
-use rocket::request::Form;
 use rocket_contrib::json::Json;
 use rocket_cors;
 
