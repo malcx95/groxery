@@ -1,11 +1,19 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use std::vec::Vec;
 
 
 #[derive(Serialize, Deserialize)]
 pub struct Grocery {
     pub name: String,
     pub id: Uuid,
+}
+
+
+#[derive(Serialize, Deserialize)]
+pub struct GroceryList {
+    pub name: String,
+    pub groceries: Vec<Grocery>,
 }
 
 
@@ -21,3 +29,13 @@ impl Grocery {
 
 }
 
+impl GroceryList {
+
+    pub fn new(name: String) -> GroceryList {
+        GroceryList {
+            name: name,
+            groceries: Vec::new()
+        }
+    }
+
+}

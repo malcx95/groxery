@@ -6,16 +6,10 @@ const instance = axios.create({
 });
 
 export function createGrocery(name) {
-  return instance.post('/api/grocery', {
-    name: name
-  });
+  return instance.post('/api/grocery', name);
 }
 
 export function getGroceries() {
-  instance.get('/api/groceries').then(
-    groceries => {
-      console.log(groceries);
-    }
-  );
+  return instance.get('/api/groceries');
 }
 
