@@ -24,7 +24,7 @@ fn create_grocery(name: String) -> String {
 fn create_grocery_list(name: String) {
     let mut data = groceryio::GroceryData::load();
     let grocery_list = grocery::GroceryList::new(name);
-    data.add_grocery_list(&grocery_list);
+    data.add_grocery_list(grocery_list);
     data.save();
 }
 

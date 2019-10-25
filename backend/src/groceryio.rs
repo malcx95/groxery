@@ -43,7 +43,7 @@ impl GroceryData {
         serde_json::from_str(&contents).unwrap()
     }
 
-    pub fn add_grocery_list(&mut self, grocery_list: &grocery::GroceryList) {
-        self.grocery_lists.insert(grocery_list.name.clone(), *grocery_list);
+    pub fn add_grocery_list(&mut self, grocery_list: grocery::GroceryList) {
+        self.grocery_lists.insert(grocery_list.name.clone(), grocery_list);
     }
 }
