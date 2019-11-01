@@ -1,5 +1,5 @@
 import React from "react";
-import { createGrocery, getGroceries } from './requests';
+import { createGrocery, createGroceryList, getGroceries } from './requests';
 
 export class Home extends React.Component {
 
@@ -12,7 +12,7 @@ export class Home extends React.Component {
   }
 
   handleSubmit(event) {
-    createGrocery(this.state.currName).then(
+    createGroceryList(this.state.currName).then(
       data => console.log(data)
     ).catch(
       error => console.error(error)
@@ -44,4 +44,3 @@ export class Home extends React.Component {
     );
   }
 }
-

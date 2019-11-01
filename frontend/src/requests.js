@@ -13,3 +13,7 @@ export function getGroceries() {
   return instance.get('/api/groceries');
 }
 
+export function createGroceryList(name) {
+  return instance.post('/api/grocerylist/new', name);
+}
+

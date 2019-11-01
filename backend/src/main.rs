@@ -34,7 +34,7 @@ fn main() -> Result<(), rocket_cors::Error> {
         allowed_origins,
         ..Default::default()
     }.to_cors()?;
-    rocket::ignite().mount("/", routes![hello, create_grocery])
+    rocket::ignite().mount("/", routes![hello, create_grocery, create_grocery_list])
         .attach(cors)
         .launch();
     Ok(())
