@@ -8,6 +8,11 @@ use crate::grocery;
 
 const GROCERY_FILE_NAME: &str = "/home/malcolm/.groceries.json";
 
+pub enum GroceryDataError {
+    ListAlreadyExists,
+    FileCorrupted,
+    UnknownError(String)
+}
 
 #[derive(Deserialize, Serialize)]
 pub struct GroceryData {
@@ -22,28 +27,42 @@ impl GroceryData {
         }
     }
 
-    pub fn save(&self) {
-        let mut file: File;
-        if Path::new(GROCERY_FILE_NAME).exists() {
-            file = File::open(GROCERY_FILE_NAME).unwrap();
-        } else {
-            file = File::create(GROCERY_FILE_NAME).unwrap();
-        }
+    pub fn save(&self) -> Result<(), GroceryDataError> {
+        let mut file = File::create(GROCERY_FILE_NAME)
+            .or(Err(GroceryDataError::UnknownError(
+                        String::from("Could not open file!"))))?;
         let json_string = serde_json::to_string(self).unwrap();
-        file.write_all(&json_string.into_bytes()).unwrap();
-    }
-
-    pub fn load() -> GroceryData {
-        if Path::new(GROCERY_FILE_NAME).exists() {
-            return GroceryData::new();
+        match file.write_all(&json_string.into_bytes()) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(GroceryDataError::UnknownError(
+                    String::from("Could not write to grocery data file!")))
         }
-        let mut file = File::open(GROCERY_FILE_NAME).unwrap();
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap();
-        serde_json::from_str(&contents).unwrap()
     }
 
-    pub fn add_grocery_list(&mut self, grocery_list: grocery::GroceryList) {
-        self.grocery_lists.insert(grocery_list.name.clone(), grocery_list);
+    pub fn load() -> Result<GroceryData, GroceryDataError> {
+        if !Path::new(GROCERY_FILE_NAME).exists() {
+            return Ok(GroceryData::new());
+        }
+        let mut file = File::open(GROCERY_FILE_NAME)
+            .or(Err(GroceryDataError::UnknownError(
+                        String::from("Could not open file!"))))?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)
+            .or(Err(GroceryDataError::UnknownError(
+                    String::from("Could not read grocery data"))))?;
+        match serde_json::from_str(&contents) {
+            Ok(data) => Ok(data),
+            Err(_) => Err(GroceryDataError::FileCorrupted)
+        }
+    }
+
+    pub fn add_grocery_list(&mut self,
+        grocery_list: grocery::GroceryList) -> Result<(), GroceryDataError> {
+        if self.grocery_lists.contains_key(&grocery_list.name) {
+            self.grocery_lists.insert(grocery_list.name.clone(), grocery_list);
+            Ok(())
+        } else {
+            Err(GroceryDataError::ListAlreadyExists)
+        }
     }
 }

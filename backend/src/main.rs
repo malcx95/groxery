@@ -3,6 +3,9 @@
 #[macro_use] extern crate rocket;
 use std::vec;
 use rocket_contrib::json::Json;
+use rocket::Response;
+use rocket::response;
+use rocket::http::Status;
 use rocket_cors;
 
 mod grocery;
@@ -21,11 +24,12 @@ fn create_grocery(name: String) -> String {
 }
 
 #[post("/api/grocerylist/new", data = "<name>")]
-fn create_grocery_list(name: String) {
+fn create_grocery_list<'r>(name: String) -> response::Result<'r> {
     let mut data = groceryio::GroceryData::load();
     let grocery_list = grocery::GroceryList::new(name);
     data.add_grocery_list(grocery_list);
     data.save();
+    Response::build().status(Status::Ok).ok()
 }
 
 fn main() -> Result<(), rocket_cors::Error> {
