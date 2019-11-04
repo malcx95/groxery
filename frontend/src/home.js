@@ -15,7 +15,13 @@ export class Home extends React.Component {
     createGroceryList(this.state.currName).then(
       data => console.log(data)
     ).catch(
-      error => console.error(error)
+      error => {
+        if (error.response.data === "listAlreadyExists") {
+          alert("This list already exists!");
+        } else {
+          alert("An unknown error occurred!");
+        }
+      }
     );
     event.preventDefault();
   }

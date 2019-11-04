@@ -34,7 +34,7 @@ impl GroceryData {
         let json_string = serde_json::to_string(self).unwrap();
         match file.write_all(&json_string.into_bytes()) {
             Ok(_) => Ok(()),
-            Err(err) => Err(GroceryDataError::UnknownError(
+            Err(_) => Err(GroceryDataError::UnknownError(
                     String::from("Could not write to grocery data file!")))
         }
     }
@@ -58,7 +58,7 @@ impl GroceryData {
 
     pub fn add_grocery_list(&mut self,
         grocery_list: grocery::GroceryList) -> Result<(), GroceryDataError> {
-        if self.grocery_lists.contains_key(&grocery_list.name) {
+        if !self.grocery_lists.contains_key(&grocery_list.name) {
             self.grocery_lists.insert(grocery_list.name.clone(), grocery_list);
             Ok(())
         } else {
