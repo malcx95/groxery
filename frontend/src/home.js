@@ -1,18 +1,80 @@
 import React from "react";
+import TextField from '@material-ui/core/TextField';
+import Button from "@material-ui/core/Button";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { createGrocery, createGroceryList, getGroceries } from './requests';
+
+function NewGroceryListDialog(props) {
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = () => {
+    setOpen(false);
+    props.onSubmit(name);
+  };
+
+  let name = '';
+  const handleChange = (event) => {
+    name = event.target.value;
+  };
+
+  return (
+    <div>
+      <Button variant="contained" onClick={handleOpen}>
+        New grocery list...
+      </Button>
+      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Enter a name for the list</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            fullWidth
+            onChange={handleChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
 
 export class Home extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {currName: ''};
+    this.state = {
+      currName: '',
+      newGroceryListName: ''
+    };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleSubmit(event) {
-    createGroceryList(this.state.currName).then(
+  handleSubmit(name) {
+    createGroceryList(name).then(
       data => console.log(data)
     ).catch(
       error => {
@@ -23,7 +85,6 @@ export class Home extends React.Component {
         }
       }
     );
-    event.preventDefault();
   }
 
   handleChange(event) {
@@ -33,20 +94,13 @@ export class Home extends React.Component {
   render() {
     return (
       <div>
-        <h2>Home</h2>
-        <p>Here are your grocery lists</p>
-
-        <form onSubmit={this.handleSubmit}>
-          <label>Name:
-            <input
-              type="text"
-              name="name"
-              value={this.state.currName}
-              onChange={this.handleChange}/>
-          </label>
-          <input type="submit" value="Submit"/>
-        </form>
+        <h2>Grocery lists</h2>
+        <NewGroceryListDialog
+          onSubmit={this.handleSubmit}
+          name={this.state.newGroceryListName}
+        />
       </div>
     );
   }
 }
+

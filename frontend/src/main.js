@@ -4,19 +4,13 @@ import { Home } from "./home";
 
 class Groxery extends React.Component {
 
-  /*
-  constructor(props) {
-    super(props);
-  }
-  */
-  
   render() {
     return (
       <Router>
         <div>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/">Grocery lists</Link>
             </li>
             <li>
               <Link to="/about">About</Link>
