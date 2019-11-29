@@ -9,8 +9,8 @@ export function createGrocery(name) {
   return instance.post('/api/grocery', name);
 }
 
-export function getGroceries() {
-  return instance.get('/api/groceries');
+export function getGroceryLists() {
+  return instance.get('/api/grocerylist/all');
 }
 
 export function createGroceryList(name) {

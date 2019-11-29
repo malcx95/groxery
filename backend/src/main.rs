@@ -2,10 +2,13 @@
 
 #[macro_use] extern crate rocket;
 use std::vec;
+use std::collections::HashMap;
 use std::io::Cursor;
+
 use rocket_contrib::json::Json;
 use rocket::http::ContentType;
 use rocket::Response;
+use rocket::response::status;
 use rocket::response;
 use rocket::http::Status;
 use rocket_cors;
@@ -15,9 +18,19 @@ mod groceryio;
 
 use crate::groceryio::GroceryDataError;
 
-#[get("/hello/<name>/<age>")]
-fn hello(name: String, age: u8) -> String {
-    format!("Hello, {} year old named {}!", age, name)
+#[get("/api/grocerylist/all")]
+fn get_grocery_lists()
+    -> Result<Json<HashMap<String, grocery::GroceryList>>,
+        status::BadRequest<String>> {
+    match groceryio::GroceryData::load() {
+        Ok(data) => Ok(Json(data.grocery_lists)),
+        Err(GroceryDataError::FileCorrupted) => {
+            Err(status::BadRequest(Some(String::from("fileCorrupted"))))
+        }
+        Err(_) => {
+            Err(status::BadRequest(Some(String::from("unknownLoadError"))))
+        }
+    }
 }
 
 #[post("/api/grocery", data = "<name>")]
@@ -68,7 +81,7 @@ fn main() -> Result<(), rocket_cors::Error> {
         allowed_origins,
         ..Default::default()
     }.to_cors()?;
-    rocket::ignite().mount("/", routes![hello, create_grocery, create_grocery_list])
+    rocket::ignite().mount("/", routes![get_grocery_lists, create_grocery, create_grocery_list])
         .attach(cors)
         .launch();
     Ok(())

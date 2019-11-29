@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { createGrocery, createGroceryList, getGroceries } from './requests';
+import { createGrocery, createGroceryList, getGroceryLists } from './requests';
 
 function NewGroceryListDialog(props) {
 
@@ -71,6 +71,9 @@ export class Home extends React.Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.fetchGroceryLists = this.fetchGroceryLists.bind(this);
+
+    this.fetchGroceryLists();
   }
 
   handleSubmit(name) {
@@ -89,6 +92,14 @@ export class Home extends React.Component {
 
   handleChange(event) {
     this.setState({currName: event.target.value});
+  }
+
+  fetchGroceryLists() {
+    getGroceryLists().then(
+      data => console.log(data)
+    ).catch(
+      error => console.error(error)
+    );
   }
 
   render() {
