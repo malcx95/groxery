@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 
 use rocket_contrib::json::Json;
+use rocket_contrib::serve::StaticFiles;
 use rocket::http::ContentType;
 use rocket::Response;
 use rocket::response::status;
@@ -18,7 +19,7 @@ mod groceryio;
 
 use crate::groceryio::GroceryDataError;
 
-#[get("/api/grocerylist/all")]
+#[get("/grocerylist/all")]
 fn get_grocery_lists()
     -> Result<Json<HashMap<String, grocery::GroceryList>>,
         status::BadRequest<String>> {
@@ -33,13 +34,13 @@ fn get_grocery_lists()
     }
 }
 
-#[post("/api/grocery", data = "<name>")]
+#[post("/grocery", data = "<name>")]
 fn create_grocery(name: String) -> String {
     let g = grocery::Grocery::new(name);
     "".to_string()
 }
 
-#[post("/api/grocerylist/new", data = "<name>")]
+#[post("/grocerylist/new", data = "<name>")]
 fn create_grocery_list<'r>(name: String) -> response::Result<'r> {
     let mut data = match groceryio::GroceryData::load() {
         Ok(data) => data,
@@ -76,13 +77,11 @@ fn create_grocery_list<'r>(name: String) -> response::Result<'r> {
 }
 
 fn main() -> Result<(), rocket_cors::Error> {
-    let allowed_origins = rocket_cors::AllowedOrigins::some_exact(&["http://localhost:3000"]);
-    let cors = rocket_cors::CorsOptions {
-        allowed_origins,
-        ..Default::default()
-    }.to_cors()?;
-    rocket::ignite().mount("/", routes![get_grocery_lists, create_grocery, create_grocery_list])
-        .attach(cors)
+    rocket::ignite()
+        .mount("/api", routes![
+            get_grocery_lists, create_grocery, create_grocery_list
+        ])
+        .mount("/", StaticFiles::from("../elm/public/"))
         .launch();
     Ok(())
 }
