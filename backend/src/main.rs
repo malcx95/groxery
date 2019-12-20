@@ -21,10 +21,10 @@ use crate::groceryio::GroceryDataError;
 
 #[get("/grocerylist/all")]
 fn get_grocery_lists()
-    -> Result<Json<HashMap<String, grocery::GroceryList>>,
+    -> Result<Json<Vec<grocery::GroceryList>>,
         status::BadRequest<String>> {
     match groceryio::GroceryData::load() {
-        Ok(data) => Ok(Json(data.grocery_lists)),
+        Ok(data) => Ok(Json(data.grocery_lists.values().cloned().collect())),
         Err(GroceryDataError::FileCorrupted) => {
             Err(status::BadRequest(Some(String::from("fileCorrupted"))))
         }
@@ -76,10 +76,15 @@ fn create_grocery_list<'r>(name: String) -> response::Result<'r> {
     Response::build().status(Status::Ok).ok()
 }
 
+#[get("/hejsan")]
+fn get_hello() -> String {
+    String::from("hejsan")
+}
+
 fn main() -> Result<(), rocket_cors::Error> {
     rocket::ignite()
         .mount("/api", routes![
-            get_grocery_lists, create_grocery, create_grocery_list
+            get_hello, get_grocery_lists, create_grocery, create_grocery_list
         ])
         .mount("/", StaticFiles::from("../elm/public/"))
         .launch();

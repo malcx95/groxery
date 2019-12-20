@@ -3,14 +3,14 @@ use uuid::Uuid;
 use std::vec::Vec;
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Grocery {
     pub name: String,
     pub id: Uuid,
 }
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct GroceryList {
     pub name: String,
     pub groceries: Vec<Grocery>,
