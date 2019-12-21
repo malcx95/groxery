@@ -4,6 +4,9 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import GroxeryMsg exposing (Msg)
+import Grocery exposing (Grocery, GroceryList)
+import GroceryView
 import Requests
 import Http
 
@@ -25,34 +28,26 @@ main =
 type Model
   = Failure
   | Loading
-  | Success String
+  | Success (List GroceryList)
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Loading
-  , Http.get
-      { url = Requests.apiUrl "grocerylist/all"
-      , expect = Http.expectString GotText
-      }
+  , Requests.getGroceryLists
   )
 
 
 
 -- UPDATE
 
-
-type Msg
-  = GotText (Result Http.Error String)
-
-
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    GotText result ->
+    GroxeryMsg.GotGroceryLists result ->
       case result of
-        Ok fullText ->
-          (Success fullText, Cmd.none)
+        Ok groceryLists ->
+          (Success groceryLists, Cmd.none)
 
         Err _ ->
           (Failure, Cmd.none)
@@ -80,8 +75,8 @@ view model =
     Loading ->
       text "Loading..."
 
-    Success fullText ->
-      pre [] [ text fullText ]
+    Success groceryLists ->
+      pre [] [ text (String.fromInt (List.length groceryLists)) ]
 
 
 -- view model =

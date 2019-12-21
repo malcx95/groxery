@@ -1,4 +1,5 @@
-import Html exposing (..)
+module Grocery exposing (..)
+
 
 type alias Grocery = 
   { name : String
@@ -12,12 +13,3 @@ type alias GroceryList =
   }
 
 
-renderGrocery : Grocery -> Html
-renderGrocery grocery =
-  div []
-    [ p [] [ text grocery.name ]
-    ]
-
-renderGroceryList : GroceryList -> List Html
-renderGroceryList groceryList =
-  map renderGrocery groceryList
