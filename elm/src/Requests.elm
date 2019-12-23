@@ -1,4 +1,4 @@
-module Requests exposing (..)
+module Requests exposing (apiUrl, getGroceryLists)
 
 import Http
 import GroxeryMsg exposing (Msg)

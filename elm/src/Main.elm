@@ -1,23 +1,24 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (onInput)
 import GroxeryMsg exposing (Msg)
 import Grocery exposing (Grocery, GroceryList)
 import GroceryView
 import Requests
 import Http
+import Style
 
 -- MAIN
 
 main =
-  Browser.element
+  Browser.document
     { init = init
     , update = update
     , subscriptions = subscriptions
-    , view = view
+    , view = (\model -> Browser.Document "Groxery" [toUnstyled <| view model])
     }
 
 
@@ -76,7 +77,7 @@ view model =
       text "Loading..."
 
     Success groceryLists ->
-      pre [] [ text (String.fromInt (List.length groceryLists)) ]
+      GroceryView.view groceryLists
 
 
 -- view model =
