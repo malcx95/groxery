@@ -42,6 +42,7 @@ fn create_grocery(name: String) -> String {
 
 #[post("/grocerylist/new", data = "<name>")]
 fn create_grocery_list<'r>(name: String) -> response::Result<'r> {
+    println!("{}", name);
     let mut data = match groceryio::GroceryData::load() {
         Ok(data) => data,
         Err(GroceryDataError::FileCorrupted) => return Response::build()

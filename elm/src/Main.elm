@@ -6,6 +6,7 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onInput)
 import GroxeryMsg exposing (Msg)
 import Grocery exposing (Grocery, GroceryList)
+import GroceryModel exposing (Model)
 import GroceryView
 import Requests
 import Http
@@ -23,18 +24,9 @@ main =
 
 
 
--- MODEL
-
-
-type Model
-  = Failure
-  | Loading
-  | Success (List GroceryList)
-
-
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Loading
+  ( Model [] ""
   , Requests.getGroceryLists
   )
 
@@ -48,11 +40,23 @@ update msg model =
     GroxeryMsg.GotGroceryLists result ->
       case result of
         Ok groceryLists ->
-          (Success groceryLists, Cmd.none)
+          ({ model | groceryLists = groceryLists }, Cmd.none)
 
         Err _ ->
-          (Failure, Cmd.none)
+          ({ model | groceryLists = [] }, Cmd.none)
+    
+    GroxeryMsg.GroceryListFieldChanged newContent ->
+      ({ model | newGroceryList = newContent }, Cmd.none)
 
+    GroxeryMsg.CreateGroceryList ->
+      (model, Requests.createGroceryList model.newGroceryList)
+
+    GroxeryMsg.GroceryListCreated result ->
+      case result of
+        Ok _ ->
+          (model, Cmd.none)
+        Err _ ->
+          ({ model | groceryLists = [] }, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -69,15 +73,7 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-  case model of
-    Failure ->
-      text ":("
-
-    Loading ->
-      text "Loading..."
-
-    Success groceryLists ->
-      GroceryView.view groceryLists
+  GroceryView.view model
 
 
 -- view model =
