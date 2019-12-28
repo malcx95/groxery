@@ -8,6 +8,7 @@ import Routes exposing (Route)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Html.Styled
 import Html.Styled exposing (toUnstyled)
 import GroxeryMsg exposing (Msg)
 import Grocery exposing (Grocery, GroceryList)
@@ -16,12 +17,7 @@ import GroceryView
 import Requests
 import Http
 import Style
-
-sideBarColor =
-  "#404040"
-
-sideBarColorSelected =
-  "#505050"
+import UI
 
 -- MAIN
 
@@ -100,60 +96,21 @@ view model =
         Just route ->
           case route of
             Routes.Groceries ->
-              (\_ -> text "Groceries")
+              (\_ -> Html.Styled.text "Groceries")
             Routes.GroceryLists ->
-              (\m -> toUnstyled <| GroceryView.view m)
+              (\m -> GroceryView.view m)
             Routes.Inventory ->
-              (\_ -> text "Inventory")
+              (\_ -> Html.Styled.text "Inventory")
         Nothing ->
-          (\_ -> h1 [] [ text "Click something in the side bar" ])
+          (\_ -> Html.Styled.h1 []
+            [ Html.Styled.text "Click something in the side bar" ])
 
-    sidebar =
-      div [ style "height" "100%"
-          , style "width" "200px"
-          , style "position" "fixed"
-          , style "top" "0"
-          , style "left" "0"
-          , style "overflow-x" "hidden"
-          , style "padding-top" "60px"
-          , style "background-color" "#404040"
-          ]
-        [ viewLink "/grocerylists" "Grocery Lists" Routes.GroceryLists model.route
-        , viewLink "/groceries" "All Groceries" Routes.Groceries model.route
-        , viewLink "/inventory" "Inventory" Routes.Inventory model.route
-        ]
-
-    header =
-      div [ style "margin-left" "200px"
-          , style "text-align" "center"
-        ] [ h1 [] [ text "Groxery" ] ]
-
+    sidebar = toUnstyled <| UI.sidebar model
+    header = toUnstyled UI.header
+    contentContainer = toUnstyled <| UI.contentContainer <| currentView model
   in
     { title = "Groxery"
     , body = [ header
              , sidebar
-             , div [ style "height" "100%"
-                   , style "margin-left" "200px"
-                   ] [ currentView model ] ]
+             , contentContainer ]
     }
-
-viewLink : String -> String -> Routes.Route -> Maybe Routes.Route -> Html msg
-viewLink path name route selectedRoute =
-  let
-    backgroundColor =
-      case selectedRoute of
-        Just r ->
-          if route == r then
-            sideBarColorSelected
-          else
-            sideBarColor
-        Nothing ->
-          sideBarColor
-  in
-    a [ style "padding" "8px"
-      , style "text-decoration" "none"
-      , style "font-size" "25px"
-      , style "color" "#ffffff"
-      , style "background-color" backgroundColor
-      , style "display" "block"
-      , href path ] [ text name ]
