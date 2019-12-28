@@ -34,7 +34,7 @@ main =
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  ( Model key Nothing [] "", Cmd.none )
+  ( Model key (Url.Parser.parse Routes.routeParser url) [] "", Cmd.none )
 
 
 -- UPDATE
@@ -83,10 +83,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-
-
 -- VIEW
-
 
 view : Model -> Browser.Document Msg
 view model =

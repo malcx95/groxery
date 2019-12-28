@@ -9,6 +9,9 @@ headerHeight =
 sideBarColor =
   rgb 40 40 40
 
+sideBarColorHover =
+  rgb 60 60 60
+
 sideBarColorSelected =
   rgb 100 100 100
 
@@ -60,15 +63,23 @@ sideBarStyle =
 
 sideBarLinkStyle : Color -> Style
 sideBarLinkStyle linkColor =
-  Css.batch
-    [ padding (px 8)
-    , fontFamilies ["Arial", "Helvetica", "sans-serif"]
-    , textDecoration none
-    , fontSize (px 25)
-    , color (rgb 255 255 255)
-    , backgroundColor linkColor
-    , display block
-    ]
+  let
+    hoverColor =
+      if linkColor == sideBarColorSelected then
+        sideBarColorSelected
+      else
+        sideBarColorHover
+  in
+    Css.batch
+      [ padding (px 8)
+      , fontFamilies ["Arial", "Helvetica", "sans-serif"]
+      , textDecoration none
+      , fontSize (px 25)
+      , color (rgb 255 255 255)
+      , backgroundColor linkColor
+      , display block
+      , hover [ backgroundColor hoverColor ]
+      ]
 
 contentContainerStyle : Style
 contentContainerStyle =
@@ -76,4 +87,5 @@ contentContainerStyle =
     [ height (pct 100)
     , marginLeft sidebarWidth
     , marginTop headerHeight
+    , padding (px 10)
     ]

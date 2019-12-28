@@ -4,6 +4,8 @@
 use std::vec;
 use std::collections::HashMap;
 use std::io::Cursor;
+use std::fs::File;
+use std::io::prelude::*;
 
 use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
@@ -77,17 +79,53 @@ fn create_grocery_list<'r>(name: String) -> response::Result<'r> {
     Response::build().status(Status::Ok).ok()
 }
 
-#[get("/hejsan")]
-fn get_hello() -> String {
-    String::from("hejsan")
+
+#[get("/groceries")]
+fn get_groceries_page<'r>() -> response::Result<'r> {
+    get_page()
 }
+
+
+#[get("/grocerylists")]
+fn get_grocery_lists_page<'r>() -> response::Result<'r> {
+    get_page()
+}
+
+#[get("/inventory")]
+fn get_inventory_page<'r>() -> response::Result<'r> {
+    get_page()
+}
+
+#[get("/")]
+fn get_page<'r>() -> response::Result<'r> {
+    let mut file = match File::open("../elm/public/index.html") {
+        Ok(f) => f,
+        Err(_) => {
+            return Response::build()
+                .status(Status::NotFound)
+                .header(ContentType::Plain)
+                .sized_body(Cursor::new("Could not find index.html"))
+                .ok()
+        }
+    };
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    return Response::build()
+        .status(Status::BadRequest)
+        .header(ContentType::HTML)
+        .sized_body(Cursor::new(contents))
+        .ok()
+}
+
 
 fn main() -> Result<(), rocket_cors::Error> {
     rocket::ignite()
         .mount("/api", routes![
-            get_hello, get_grocery_lists, create_grocery, create_grocery_list
+            get_grocery_lists, create_grocery, create_grocery_list
         ])
-        .mount("/", StaticFiles::from("../elm/public/"))
+        .mount("/", routes![
+            get_page, get_inventory_page, get_grocery_lists_page, get_groceries_page
+        ])
         .launch();
     Ok(())
 }
