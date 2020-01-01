@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate rocket;
+#[macro_use] extern crate diesel;
 use std::vec;
 use std::collections::HashMap;
 use std::io::Cursor;
@@ -18,6 +19,8 @@ use rocket_cors;
 
 mod grocery;
 mod groceryio;
+mod db;
+mod schema;
 
 use crate::groceryio::GroceryDataError;
 
@@ -36,10 +39,15 @@ fn get_grocery_lists()
     }
 }
 
-#[post("/grocery", data = "<name>")]
-fn create_grocery(name: String) -> String {
-    let g = grocery::Grocery::new(name);
-    "".to_string()
+#[post("/grocery", format = "json", data = "<grocery>")]
+fn create_grocery(grocery: Json<db::NewGrocery>)
+    -> Result<(), status::BadRequest<String>> {
+    let new_grocery = grocery.into_inner();
+    let conn = db::establish_connection();
+    match db::create_grocery(&conn, &new_grocery) {
+        Some(_) => Ok(()),
+        None => Err(status::BadRequest(None))
+    }
 }
 
 #[post("/grocerylist/new", data = "<name>")]

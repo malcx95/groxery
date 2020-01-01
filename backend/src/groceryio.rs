@@ -35,7 +35,7 @@ impl GroceryData {
         match file.write_all(&json_string.into_bytes()) {
             Ok(_) => Ok(()),
             Err(_) => Err(GroceryDataError::UnknownError(
-                    String::from("Could not write to grocery data file!")))
+                String::from("Could not write to grocery data file!")))
         }
     }
 
