@@ -39,13 +39,13 @@ fn get_grocery_lists()
     }
 }
 
-#[post("/grocery", format = "json", data = "<grocery>")]
+#[post("/grocery/new", format = "json", data = "<grocery>")]
 fn create_grocery(grocery: Json<db::NewGrocery>)
-    -> Result<(), status::BadRequest<String>> {
+    -> Result<Json<grocery::Grocery>, status::BadRequest<String>> {
     let new_grocery = grocery.into_inner();
     let conn = db::establish_connection();
     match db::create_grocery(&conn, &new_grocery) {
-        Some(_) => Ok(()),
+        Some(grocery) => Ok(Json(grocery)),
         None => Err(status::BadRequest(None))
     }
 }
