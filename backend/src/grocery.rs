@@ -20,6 +20,14 @@ pub enum GroceryCategory {
 }
 
 
+#[derive(Primitive, Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub enum Priority {
+    Low = 0,
+    Medium = 1,
+    High = 2,
+}
+
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Grocery {
     pub id: i32,
@@ -30,9 +38,18 @@ pub struct Grocery {
 
 
 #[derive(Serialize, Deserialize, Clone)]
+pub struct GroceryListEntry {
+    pub id: i32,
+    pub priority: Priority,
+    pub grocery: Grocery,
+}
+
+
+#[derive(Serialize, Deserialize, Clone)]
 pub struct GroceryList {
+    pub id: i32,
     pub name: String,
-    pub groceries: Vec<Grocery>,
+    pub entries: Vec<GroceryListEntry>,
 }
 
 
@@ -53,10 +70,11 @@ impl Grocery {
 
 impl GroceryList {
 
-    pub fn new(name: String) -> GroceryList {
+    pub fn new(id: i32, name: String) -> GroceryList {
         GroceryList {
+            id: id,
             name: name,
-            groceries: Vec::new()
+            entries: vec!()
         }
     }
 

@@ -3,13 +3,11 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate diesel;
 use std::vec;
-use std::collections::HashMap;
 use std::io::Cursor;
 use std::fs::File;
 use std::io::prelude::*;
 
 use rocket_contrib::json::Json;
-use rocket_contrib::serve::StaticFiles;
 use rocket::http::ContentType;
 use rocket::Response;
 use rocket::response::status;
@@ -18,24 +16,18 @@ use rocket::http::Status;
 use rocket_cors;
 
 mod grocery;
-mod groceryio;
 mod db;
 mod schema;
-
-use crate::groceryio::GroceryDataError;
 
 #[get("/grocerylist/all")]
 fn get_grocery_lists()
     -> Result<Json<Vec<grocery::GroceryList>>,
         status::BadRequest<String>> {
-    match groceryio::GroceryData::load() {
-        Ok(data) => Ok(Json(data.grocery_lists.values().cloned().collect())),
-        Err(GroceryDataError::FileCorrupted) => {
-            Err(status::BadRequest(Some(String::from("fileCorrupted"))))
-        }
-        Err(_) => {
-            Err(status::BadRequest(Some(String::from("unknownLoadError"))))
-        }
+    let conn = db::establish_connection();
+
+    match db::get_all_grocery_lists(&conn) {
+        Ok(grocery_lists) => Ok(Json(grocery_lists)),
+        Err(()) => Err(status::BadRequest(None))
     }
 }
 
@@ -45,46 +37,30 @@ fn create_grocery(grocery: Json<db::NewGrocery>)
     let new_grocery = grocery.into_inner();
     let conn = db::establish_connection();
     match db::create_grocery(&conn, &new_grocery) {
-        Some(grocery) => Ok(Json(grocery)),
-        None => Err(status::BadRequest(None))
+        Ok(grocery) => Ok(Json(grocery)),
+        Err(()) => Err(status::BadRequest(None)),
+    }
+}
+
+#[get("/grocery/all")]
+fn get_all_groceries()
+    -> Result<Json<Vec<grocery::Grocery>>, status::BadRequest<String>> {
+    let conn = db::establish_connection();
+    match db::get_all_groceries(&conn) {
+        Ok(groceries) => Ok(Json(groceries)),
+        Err(()) => Err(status::BadRequest(None)),
     }
 }
 
 #[post("/grocerylist/new", data = "<name>")]
-fn create_grocery_list<'r>(name: String) -> response::Result<'r> {
-    println!("{}", name);
-    let mut data = match groceryio::GroceryData::load() {
-        Ok(data) => data,
-        Err(GroceryDataError::FileCorrupted) => return Response::build()
-            .status(Status::BadRequest)
-            .header(ContentType::Plain)
-            .sized_body(Cursor::new("fileCorrupted"))
-            .ok(),
-        _ => return Response::build()
-            .status(Status::BadRequest)
-            .header(ContentType::Plain)
-            .sized_body(Cursor::new("unknownLoadError"))
-            .ok()
-    };
-    let grocery_list = grocery::GroceryList::new(name);
-    match data.add_grocery_list(grocery_list) {
-        Ok(()) => (),
-        Err(GroceryDataError::ListAlreadyExists) => return Response::build()
-            .status(Status::BadRequest)
-            .header(ContentType::Plain)
-            .sized_body(Cursor::new("listAlreadyExists"))
-            .ok(),
-        _ => panic!("This should not happen!")
-    };
-    match data.save() {
-        Ok(()) => (),
-        Err(_) => return Response::build()
-            .status(Status::BadRequest)
-            .header(ContentType::Plain)
-            .sized_body(Cursor::new("unknownSaveError"))
-            .ok()
+fn create_grocery_list<'r>(name: String)
+    -> Result<Json<grocery::GroceryList>, status::BadRequest<String>> {
+    let new_grocery_list = db::NewGroceryList { name };
+    let conn = db::establish_connection();
+    match db::create_grocery_list(&conn, &new_grocery_list) {
+        Ok(grocery_list) => Ok(Json(grocery_list)),
+        Err(()) => Err(status::BadRequest(None)),
     }
-    Response::build().status(Status::Ok).ok()
 }
 
 
