@@ -14,6 +14,7 @@ import GroxeryMsg exposing (Msg)
 import Grocery exposing (Grocery, GroceryList)
 import GroceryModel exposing (Model)
 import GroceryListView
+import GroceriesView
 import Requests
 import Http
 import Style
@@ -114,7 +115,7 @@ view model =
         Just route ->
           case route of
             Routes.Groceries ->
-              (\_ -> Html.Styled.text "Groceries")
+              (\m -> GroceriesView.view m)
             Routes.GroceryLists ->
               (\m -> GroceryListView.view m)
             Routes.Inventory ->
