@@ -1,0 +1,6 @@
+CREATE TABLE groceries (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  category INTEGER NOT NULL,
+  by_weight BOOLEAN NOT NULL
+);

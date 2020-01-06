@@ -1,4 +1,4 @@
-module GroceryView exposing (view)
+module GroceryListView exposing (view)
 
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -9,7 +9,6 @@ import Grocery exposing (..)
 import GroxeryMsg exposing (..)
 import Style
 
-
 newGroceryListElement : Model -> Html Msg
 newGroceryListElement model =
   p []
@@ -18,10 +17,10 @@ newGroceryListElement model =
     , button [ onClick GroxeryMsg.CreateGroceryList ] [ text "Create" ]
     ]
 
-viewGrocery : Grocery -> Html Msg
-viewGrocery grocery =
+viewGroceryListEntry : GroceryListEntry -> Html Msg
+viewGroceryListEntry entry =
   div []
-    [ p [ css [ Style.textStyle ] ] [ text grocery.name ]
+    [ p [ css [ Style.textStyle ] ] [ text entry.grocery.name ]
     ]
 
 
@@ -29,7 +28,7 @@ viewGroceryList : GroceryList -> Html Msg
 viewGroceryList groceryList =
   div []
     [ h3 [ css [ Style.textStyle ] ] [ text groceryList.name ]
-    , div [] (List.map viewGrocery groceryList.groceries)
+    , div [] (List.map viewGroceryListEntry groceryList.entries)
     ]
 
 viewGroceryLists : Model -> Html Msg

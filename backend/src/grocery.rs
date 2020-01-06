@@ -1,29 +1,45 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use std::vec::Vec;
+
+use crate::schema::*;
+
+
+#[derive(Identifiable, Queryable, Serialize, Deserialize, Clone)]
+#[table_name="groceries"]
+pub struct Grocery {
+    pub id: i32,
+    pub name: String,
+    pub category: i32,
+    pub by_weight: bool,
+}
 
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct Grocery {
-    pub name: String,
-    pub id: Uuid,
+pub struct GroceryListEntry {
+    pub id: i32,
+    pub priority: i32,
+    pub grocery: Grocery,
 }
 
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct GroceryList {
+    pub id: i32,
     pub name: String,
-    pub groceries: Vec<Grocery>,
+    pub entries: Vec<GroceryListEntry>,
 }
 
 
 impl Grocery {
 
-    pub fn new(name: String) -> Grocery {
-        let uuid = Uuid::new_v4();
+    pub fn new(
+        name: String, id: i32, category: i32, by_weight: bool
+        ) -> Grocery {
         Grocery {
-            name: name,
-            id: uuid
+            name,
+            id,
+            category,
+            by_weight,
         }
     }
 
@@ -31,10 +47,11 @@ impl Grocery {
 
 impl GroceryList {
 
-    pub fn new(name: String) -> GroceryList {
+    pub fn new(id: i32, name: String) -> GroceryList {
         GroceryList {
+            id: id,
             name: name,
-            groceries: Vec::new()
+            entries: vec!()
         }
     }
 

@@ -13,4 +13,5 @@ type Msg
   | CreateGroceryList
   | GroceryListFieldChanged String
   | GroceryListCreated (Result Http.Error ())
+  | InitView
 
