@@ -1,38 +1,15 @@
 use serde::{Deserialize, Serialize};
 use std::vec::Vec;
-use enum_primitive_derive::*;
-use num_traits;
+
+use crate::schema::*;
 
 
-#[derive(Primitive, Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub enum GroceryCategory {
-    Dairy = 0,
-    Meat = 1,
-    Seafood = 2,
-    Colonial = 3,
-    FruitOrVegetable = 4,
-    Snacks = 5,
-    Drinks = 6,
-    Frozen = 7,
-    Charcuterie = 8,
-    Hygiene = 9,
-    Other = 10
-}
-
-
-#[derive(Primitive, Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub enum Priority {
-    Low = 0,
-    Medium = 1,
-    High = 2,
-}
-
-
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, Clone)]
+#[table_name="groceries"]
 pub struct Grocery {
     pub id: i32,
     pub name: String,
-    pub category: GroceryCategory,
+    pub category: i32,
     pub by_weight: bool,
 }
 
@@ -40,7 +17,7 @@ pub struct Grocery {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct GroceryListEntry {
     pub id: i32,
-    pub priority: Priority,
+    pub priority: i32,
     pub grocery: Grocery,
 }
 
@@ -56,7 +33,7 @@ pub struct GroceryList {
 impl Grocery {
 
     pub fn new(
-        name: String, id: i32, category: GroceryCategory, by_weight: bool
+        name: String, id: i32, category: i32, by_weight: bool
         ) -> Grocery {
         Grocery {
             name,

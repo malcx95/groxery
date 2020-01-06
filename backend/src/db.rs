@@ -26,23 +26,17 @@ pub struct NewGroceryList {
 }
 
 
-#[derive(Queryable)]
-struct DbGrocery {
-    id: i32,
-    name: String,
-    category: i32,
-    by_weight: bool,
+#[derive(Serialize, Deserialize, Insertable, Debug, Clone)]
+#[table_name="grocery_list_entries"]
+pub struct NewGroceryListEntry {
+    pub list_id: i32,
+    pub priority: i32,
+    pub grocery_id: i32,
 }
 
 
-#[derive(Queryable)]
-struct DbGroceryList {
-    id: i32,
-    name: String,
-}
-
-
-#[derive(Queryable)]
+#[derive(Associations, Queryable)]
+#[table_name="grocery_list_entries"]
 struct DbGroceryListEntry {
     id: i32,
     list_id: i32,
@@ -50,53 +44,10 @@ struct DbGroceryListEntry {
     grocery_id: i32,
 }
 
-
-impl DbGrocery {
-
-    fn to_grocery(&self) -> grocery::Grocery {
-        let category = match grocery::GroceryCategory::from_i32(
-            self.category
-            ) {
-            Some(c) => c,
-            None => panic!("Category was invalid!")
-        };
-        grocery::Grocery {
-            id: self.id,
-            name: self.name.clone(),
-            category: category,
-            by_weight: self.by_weight
-        }
-    }
-
-    fn from_grocery(grocery: grocery::Grocery) -> Self {
-        let category = match grocery.category.to_i32() {
-            Some(c) => c,
-            None => panic!("Could not convert category to int! Maybe more than one category has the same value?")
-        };
-        Self {
-            id: grocery.id,
-            name: grocery.name.clone(),
-            category: category,
-            by_weight: grocery.by_weight,
-        }
-    }
-}
-
-
-impl DbGroceryListEntry {
-
-    fn to_grocery_list_entry(&self, grocery: grocery::Grocery)
-        -> grocery::GroceryListEntry {
-        let priority = match grocery::Priority::from_i32(self.priority) {
-            Some(p) => p,
-            None => panic!("Priority was invalid!"),
-        };
-        grocery::GroceryListEntry {
-            id: self.id,
-            priority: priority,
-            grocery: grocery,
-        }
-    }
+#[derive(Queryable)]
+struct DbGroceryList {
+    id: i32,
+    name: String,
 }
 
 
@@ -117,6 +68,19 @@ impl DbGroceryList {
 }
 
 
+impl DbGroceryListEntry {
+
+    fn to_grocery_list_entry(&self, grocery: grocery::Grocery)
+        -> grocery::GroceryListEntry {
+        grocery::GroceryListEntry {
+            id: self.id,
+            priority: self.priority,
+            grocery: grocery,
+        }
+    }
+}
+
+
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
@@ -131,21 +95,15 @@ pub fn create_grocery(
         conn: &PgConnection,
         new_grocery: &NewGrocery
     ) -> Result<grocery::Grocery, ()> {
-    match diesel::insert_into(groceries::table)
+    diesel::insert_into(groceries::table)
         .values(new_grocery)
-        .get_result::<DbGrocery>(conn) {
-        Ok(grocery) => Ok(grocery.to_grocery()),
-        Err(_) => Err(())
-    }
+        .get_result::<grocery::Grocery>(conn).or(Err(()))
 }
 
 
 pub fn get_all_groceries(conn: &PgConnection)
         -> Result<Vec<grocery::Grocery>, ()> {
-    match groceries::table.load::<DbGrocery>(conn) {
-        Ok(result) => Ok(result.iter().map(|g| g.to_grocery()).collect()),
-        Err(_) => Err(()),
-    }
+    groceries::table.load::<grocery::Grocery>(conn).or(Err(()))
 }
 
 
@@ -153,14 +111,14 @@ pub fn get_grocery_by_id(conn: &PgConnection, id: i32)
     -> Result<Option<grocery::Grocery>, ()> {
     let result = match groceries::table
         .filter(groceries::id.eq(id))
-        .load::<DbGrocery>(conn) {
+        .load::<grocery::Grocery>(conn) {
         Ok(result) => result,
         Err(_) => return Err(()),
     };
     if result.is_empty() {
         Ok(None)
     } else {
-        Ok(Some(result[0].to_grocery()))
+        Ok(Some(result[0].clone()))
     }
 }
 
@@ -204,4 +162,16 @@ pub fn get_all_grocery_lists(conn: &PgConnection)
         grocery_lists.push(list.to_grocery_list(grocery_list_entries));
     }
     Ok(grocery_lists)
+}
+
+
+pub fn add_grocery_to_list(
+    conn: &PgConnection, new_grocery_list_entry: &NewGroceryListEntry)
+    -> Result<(), ()> {
+    match diesel::insert_into(grocery_list_entries::table)
+        .values(new_grocery_list_entry)
+        .execute(conn) {
+        Ok(_) => Ok(()),
+        Err(_) => Err(())
+    }
 }

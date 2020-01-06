@@ -31,6 +31,7 @@ fn get_grocery_lists()
     }
 }
 
+
 #[post("/grocery/new", format = "json", data = "<grocery>")]
 fn create_grocery(grocery: Json<db::NewGrocery>)
     -> Result<Json<grocery::Grocery>, status::BadRequest<String>> {
@@ -42,6 +43,7 @@ fn create_grocery(grocery: Json<db::NewGrocery>)
     }
 }
 
+
 #[get("/grocery/all")]
 fn get_all_groceries()
     -> Result<Json<Vec<grocery::Grocery>>, status::BadRequest<String>> {
@@ -52,8 +54,9 @@ fn get_all_groceries()
     }
 }
 
+
 #[post("/grocerylist/new", data = "<name>")]
-fn create_grocery_list<'r>(name: String)
+fn create_grocery_list(name: String)
     -> Result<Json<grocery::GroceryList>, status::BadRequest<String>> {
     let new_grocery_list = db::NewGroceryList { name };
     let conn = db::establish_connection();
@@ -61,6 +64,16 @@ fn create_grocery_list<'r>(name: String)
         Ok(grocery_list) => Ok(Json(grocery_list)),
         Err(()) => Err(status::BadRequest(None)),
     }
+}
+
+
+#[post("/grocerylist/add", format = "json", data = "<new_entry>")]
+fn add_grocery_to_list(new_entry: Json<db::NewGroceryListEntry>)
+    -> Result<(), status::BadRequest<String>> {
+    let entry = new_entry.into_inner();
+    let conn = db::establish_connection();
+    db::add_grocery_to_list(&conn, &entry)
+        .or(Err(status::BadRequest(None)))
 }
 
 
@@ -75,10 +88,12 @@ fn get_grocery_lists_page<'r>() -> response::Result<'r> {
     get_page()
 }
 
+
 #[get("/inventory")]
 fn get_inventory_page<'r>() -> response::Result<'r> {
     get_page()
 }
+
 
 #[get("/")]
 fn get_page<'r>() -> response::Result<'r> {
@@ -95,7 +110,7 @@ fn get_page<'r>() -> response::Result<'r> {
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     return Response::build()
-        .status(Status::BadRequest)
+        .status(Status::Ok)
         .header(ContentType::HTML)
         .sized_body(Cursor::new(contents))
         .ok()
@@ -105,7 +120,11 @@ fn get_page<'r>() -> response::Result<'r> {
 fn main() -> Result<(), rocket_cors::Error> {
     rocket::ignite()
         .mount("/api", routes![
-            get_grocery_lists, create_grocery, create_grocery_list
+            get_grocery_lists,
+            create_grocery,
+            create_grocery_list,
+            get_all_groceries,
+            add_grocery_to_list,
         ])
         .mount("/", routes![
             get_page, get_inventory_page, get_grocery_lists_page, get_groceries_page

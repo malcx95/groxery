@@ -13,11 +13,12 @@ import Html.Styled exposing (toUnstyled)
 import GroxeryMsg exposing (Msg)
 import Grocery exposing (Grocery, GroceryList)
 import GroceryModel exposing (Model)
-import GroceryView
+import GroceryListView
 import Requests
 import Http
 import Style
 import UI
+import Task
 
 -- MAIN
 
@@ -34,7 +35,11 @@ main =
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  ( Model key (Url.Parser.parse Routes.routeParser url) [] "", Cmd.none )
+  let
+    route = Url.Parser.parse Routes.routeParser url
+    model = Model key route [] ""
+  in
+    initView model
 
 
 -- UPDATE
@@ -51,9 +56,7 @@ update msg model =
           ( model, Nav.load href )
 
     GroxeryMsg.UrlChanged url ->
-      ( { model | route = Url.Parser.parse Routes.routeParser url }
-      , Cmd.none
-      )
+      initView { model | route = Url.Parser.parse Routes.routeParser url }
     GroxeryMsg.GotGroceryLists result ->
       case result of
         Ok groceryLists ->
@@ -75,6 +78,24 @@ update msg model =
         Err _ ->
           ({ model | groceryLists = [] }, Cmd.none)
 
+    GroxeryMsg.InitView ->
+      initView model
+
+
+initView : Model -> ( Model, Cmd Msg )
+initView model =
+  case model.route of
+    Just route ->
+      case route of
+        Routes.GroceryLists ->
+          ( model, Requests.getGroceryLists )
+        Routes.Groceries ->
+          ( model, Cmd.none )-- TODO init code here
+        Routes.Inventory ->
+          ( model, Cmd.none ) -- TODO init code here
+    Nothing ->
+      ( model, Cmd.none )
+
 
 -- SUBSCRIPTIONS
 
@@ -95,7 +116,7 @@ view model =
             Routes.Groceries ->
               (\_ -> Html.Styled.text "Groceries")
             Routes.GroceryLists ->
-              (\m -> GroceryView.view m)
+              (\m -> GroceryListView.view m)
             Routes.Inventory ->
               (\_ -> Html.Styled.text "Inventory")
         Nothing ->
