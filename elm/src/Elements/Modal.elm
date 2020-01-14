@@ -9,6 +9,21 @@ import Css exposing (..)
 
 import GroxeryMsg exposing (Msg)
 
+modalStyle : Style
+modalStyle =
+  Css.batch
+    [ position fixed
+    , zIndex (int 1)
+    , left (px 0)
+    , right (px 0)
+    , top (px 0)
+    , Css.width (pct 100)
+    , Css.height (pct 100)
+    , overflow auto
+    , backgroundColor (rgb 0 0 0)
+    , backgroundColor (rgba 0 0 0 0.4)
+    ]
+
 contentStyle : Style
 contentStyle =
   Css.batch
@@ -44,7 +59,7 @@ footerStyle =
 
 modal : Html Msg -> Html Msg -> Html Msg -> Html Msg
 modal header body footer =
-  div []
+  div [ css [ modalStyle ] ]
     [ div [ css [ contentStyle ] ]
         [ div [ css [ headerStyle ] ] [ header ]
         , div [ css [ bodyStyle ] ] [ body ]
