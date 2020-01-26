@@ -57,12 +57,25 @@ footerStyle =
     , color (hex "#ffffff")
     ]
 
+xButtonStyle : Style
+xButtonStyle =
+  Css.batch
+    [ fontFamilies ["Arial", "Helvetica", "sans-serif"]
+    ]
+
+xButton : Html Msg
+xButton =
+  div [ css [ xButtonStyle ], onClick GroxeryMsg.CloseModal ] [ text "x" ]
+
+
 modal : Html Msg -> Html Msg -> Html Msg -> Html Msg
 modal header body footer =
   div [ css [ modalStyle ] ]
     [ div [ css [ contentStyle ] ]
-        [ div [ css [ headerStyle ] ] [ header ]
+        [ xButton
+        , div [ css [ headerStyle ] ] [ header ]
         , div [ css [ bodyStyle ] ] [ body ]
         , div [ css [ footerStyle ] ] [ footer ]
         ]
     ]
+

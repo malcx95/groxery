@@ -6,11 +6,14 @@ import Html.Styled.Events exposing (..)
 
 import GroceryModel exposing (Model)
 import GroxeryMsg exposing (Msg)
-import Elements.Modal exposing (modal)
+import Elements.Modal as Modal
 import Style
 
 view : Model -> Html Msg
 view groceryModel =
-  div []
-    [ modal (h3 [] [ text "Hejsan" ]) (text "Tjenamors") (h3 [] [text "ojdå"])
-    ]
+  let
+    modal = Modal.modal (h3 [] [ text "Hejsan" ]) (text "Tjenamors") (h3 [] [text "ojdå"])
+  in
+    div []
+      [ button [ onClick (GroxeryMsg.OpenModal modal) ] [ text "New grocery" ]
+      ]

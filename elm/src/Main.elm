@@ -38,7 +38,7 @@ init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
   let
     route = Url.Parser.parse Routes.routeParser url
-    model = Model key route [] ""
+    model = Model key route [] "" Nothing
   in
     initView model
 
@@ -58,6 +58,7 @@ update msg model =
 
     GroxeryMsg.UrlChanged url ->
       initView { model | route = Url.Parser.parse Routes.routeParser url }
+
     GroxeryMsg.GotGroceryLists result ->
       case result of
         Ok groceryLists ->
@@ -81,6 +82,12 @@ update msg model =
 
     GroxeryMsg.InitView ->
       initView model
+
+    GroxeryMsg.OpenModal modal ->
+      ({ model | currentModal = Just modal }, Cmd.none)
+
+    GroxeryMsg.CloseModal ->
+      ({ model | currentModal = Nothing }, Cmd.none)
 
 
 initView : Model -> ( Model, Cmd Msg )
@@ -127,9 +134,19 @@ view model =
     sidebar = toUnstyled <| UI.sidebar model
     header = toUnstyled UI.header
     contentContainer = toUnstyled <| UI.contentContainer <| currentView model
+    contentWithModal =
+      case model.currentModal of
+        Nothing ->
+          contentContainer
+        Just modal ->
+          div []
+            [ toUnstyled modal
+            , contentContainer
+            ]
+        
   in
     { title = "Groxery"
     , body = [ header
              , sidebar
-             , contentContainer ]
+             , contentWithModal ]
     }

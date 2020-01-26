@@ -1,6 +1,7 @@
 module GroxeryMsg exposing (..)
 
 import Http
+import Html.Styled exposing (..)
 import Browser
 import Url
 import Grocery exposing (GroceryList)
@@ -14,5 +15,5 @@ type Msg
   | GroceryListFieldChanged String
   | GroceryListCreated (Result Http.Error ())
   | InitView
-  | OpenModal
+  | OpenModal (Html Msg)
   | CloseModal
