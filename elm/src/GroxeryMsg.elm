@@ -14,4 +14,5 @@ type Msg
   | GroceryListFieldChanged String
   | GroceryListCreated (Result Http.Error ())
   | InitView
-
+  | OpenModal
+  | CloseModal
