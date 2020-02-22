@@ -4,7 +4,11 @@ import Http
 import Html.Styled exposing (..)
 import Browser
 import Url
-import Grocery exposing (GroceryList)
+import Grocery exposing (GroceryList, Grocery)
+
+
+type ModalResult
+  = NewGrocery Grocery
 
 
 type Msg
@@ -16,4 +20,4 @@ type Msg
   | GroceryListCreated (Result Http.Error ())
   | InitView
   | OpenModal (Html Msg)
-  | CloseModal
+  | CloseModal (Maybe ModalResult)

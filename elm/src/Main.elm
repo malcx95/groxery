@@ -86,8 +86,12 @@ update msg model =
     GroxeryMsg.OpenModal modal ->
       ({ model | currentModal = Just modal }, Cmd.none)
 
-    GroxeryMsg.CloseModal ->
-      ({ model | currentModal = Nothing }, Cmd.none)
+    GroxeryMsg.CloseModal modalResult ->
+      case modalResult of
+        Nothing ->
+          ({ model | currentModal = Nothing }, Cmd.none)
+        Just newGrocery ->
+          ({ model | currentModal = Nothing }, Cmd.none)
 
 
 initView : Model -> ( Model, Cmd Msg )

@@ -45,27 +45,27 @@ headerStyle : Style
 headerStyle =
   Css.batch
     [ padding2 (px 2) (px 16)
-    , backgroundColor (hex "#5cb85c")
-    , color (hex "#ffffff")
     ]
 
 footerStyle : Style
 footerStyle =
   Css.batch
     [ padding2 (px 2) (px 16)
-    , backgroundColor (hex "#5cb85c")
-    , color (hex "#ffffff")
     ]
 
 xButtonStyle : Style
 xButtonStyle =
   Css.batch
     [ fontFamilies ["Arial", "Helvetica", "sans-serif"]
+    , fontSize (px 30)
+    , padding (px 10)
+    , float right
+    , cursor pointer
     ]
 
 xButton : Html Msg
 xButton =
-  div [ css [ xButtonStyle ], onClick GroxeryMsg.CloseModal ] [ text "x" ]
+  div [ css [ xButtonStyle ], onClick <| GroxeryMsg.CloseModal <| Nothing ] [ text "x" ]
 
 
 modal : Html Msg -> Html Msg -> Html Msg -> Html Msg
