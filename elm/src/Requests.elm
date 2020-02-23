@@ -2,7 +2,7 @@ module Requests exposing (apiUrl, getGroceryLists, createGroceryList)
 
 import Http
 import GroxeryMsg exposing (Msg)
-import Json.Encode
+import Encoders exposing (..)
 import Grocery exposing (GroceryList, Grocery)
 import Decoders exposing (..)
 
@@ -23,4 +23,12 @@ createGroceryList name =
     { url = apiUrl "grocerylist/new"
     , body = Http.stringBody "application/text" name
     , expect = Http.expectWhatever GroxeryMsg.GroceryListCreated
+    }
+
+createGrocery : Grocery -> Cmd Msg
+createGrocery grocery =
+  Http.post
+    { url = apiUrl "grocery/new"
+    , body = Http.jsonBody <| groceryEncoder <| grocery
+    , expect = Http.expectWhatever GroxeryMsg.GroceryCreated
     }

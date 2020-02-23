@@ -93,6 +93,13 @@ update msg model =
         Just newGrocery ->
           ({ model | currentModal = Nothing }, Cmd.none)
 
+    GroxeryMsg.GroceryCreated result ->
+      case result of
+        Ok _ ->
+          (model, Cmd.none)
+        Err _ ->
+          ({ model | groceryLists = [] }, Cmd.none)
+
 
 initView : Model -> ( Model, Cmd Msg )
 initView model =

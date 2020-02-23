@@ -1,4 +1,4 @@
-module Elements.Modal exposing (modal)
+module Elements.Modal exposing (newGroceryModal)
 
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -68,8 +68,8 @@ xButton =
   div [ css [ xButtonStyle ], onClick <| GroxeryMsg.CloseModal <| Nothing ] [ text "x" ]
 
 
-modal : Html Msg -> Html Msg -> Html Msg -> Html Msg
-modal header body footer =
+generalModal : Html Msg -> Html Msg -> Html Msg -> Html Msg
+generalModal header body footer =
   div [ css [ modalStyle ] ]
     [ div [ css [ contentStyle ] ]
         [ xButton
@@ -79,3 +79,18 @@ modal header body footer =
         ]
     ]
 
+
+modalWithTitle : String -> Html Msg -> Html Msg -> Html Msg
+modalWithTitle title body footer =
+  let
+    header = h2 [] [ text title ]
+  in
+    generalModal header body footer
+
+
+newGroceryModal : Html Msg
+newGroceryModal =
+  let
+    a = 1
+  in
+    modalWithTitle "New grocery" (text "body") (text "footer")

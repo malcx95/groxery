@@ -18,6 +18,7 @@ type Msg
   | CreateGroceryList
   | GroceryListFieldChanged String
   | GroceryListCreated (Result Http.Error ())
+  | GroceryCreated (Result Http.Error ())
   | InitView
   | OpenModal (Html Msg)
   | CloseModal (Maybe ModalResult)
