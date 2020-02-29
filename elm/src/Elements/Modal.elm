@@ -6,6 +6,8 @@ import Html.Styled.Events exposing (..)
 
 import Css
 import Css exposing (..)
+import Style
+import GroceryModel
 
 import GroxeryMsg exposing (Msg)
 
@@ -63,17 +65,22 @@ xButtonStyle =
     , cursor pointer
     ]
 
+hrStyle : Style
+hrStyle =
+  Css.batch
+    [ border3 (px 1) solid (hex "#ccc")
+    ]
+
 xButton : Html Msg
 xButton =
   div [ css [ xButtonStyle ], onClick <| GroxeryMsg.CloseModal <| Nothing ] [ text "x" ]
-
 
 generalModal : Html Msg -> Html Msg -> Html Msg -> Html Msg
 generalModal header body footer =
   div [ css [ modalStyle ] ]
     [ div [ css [ contentStyle ] ]
         [ xButton
-        , div [ css [ headerStyle ] ] [ header ]
+        , div [ css [ headerStyle ] ] [ header, hr [ css [ hrStyle ] ] []]
         , div [ css [ bodyStyle ] ] [ body ]
         , div [ css [ footerStyle ] ] [ footer ]
         ]
@@ -83,14 +90,33 @@ generalModal header body footer =
 modalWithTitle : String -> Html Msg -> Html Msg -> Html Msg
 modalWithTitle title body footer =
   let
-    header = h2 [] [ text title ]
+    header = h2 [ css [ Style.textStyle ] ] [ text title ]
   in
     generalModal header body footer
 
 
-newGroceryModal : Html Msg
-newGroceryModal =
+newGroceryModal : GroceryModel.Model -> Html Msg
+newGroceryModal model =
   let
-    a = 1
+    name =
+      input [ type_ "text", placeholder "Name", value model.newGrocery.name ]
+    category =
+      select []
+        [ option [ value "0"  ] [ text "Dairy" ]
+        , option [ value "1"  ] [ text "Meat" ]
+        , option [ value "2"  ] [ text "Seafood" ]
+        , option [ value "3"  ] [ text "Colonial" ]
+        , option [ value "4"  ] [ text "FruitOrVegetable" ]
+        , option [ value "5"  ] [ text "Snacks" ]
+        , option [ value "6"  ] [ text "Drinks" ]
+        , option [ value "7"  ] [ text "Frozen" ]
+        , option [ value "8"  ] [ text "Charcuterie" ]
+        , option [ value "9"  ] [ text "Hygiene" ]
+        , option [ value "10" ] [ text "Other" ]
+        ]
+    body =
+      div []
+        [
+        ]
   in
     modalWithTitle "New grocery" (text "body") (text "footer")
