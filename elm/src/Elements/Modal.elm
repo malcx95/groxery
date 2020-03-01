@@ -8,6 +8,7 @@ import Css
 import Css exposing (..)
 import Style
 import GroceryModel
+import Dropdown
 
 import GroxeryMsg exposing (Msg)
 
@@ -99,24 +100,35 @@ newGroceryModal : GroceryModel.Model -> Html Msg
 newGroceryModal model =
   let
     name =
-      input [ type_ "text", placeholder "Name", value model.newGrocery.name ]
+      input [ type_ "text"
+            , placeholder "Name"
+            , value model.newGrocery.name ] []
+
+    dropdownOptions = 
+      Dropdown.Options
+        (List.map
+         (\x -> Dropdown.Item x x True)
+         [ "Dairy"
+           , "Meat"
+           , "Seafood"
+           , "Colonial"
+           , "Fruit or vegetable"
+           , "Snacks"
+           , "Drinks"
+           , "Frozen"
+           , "Charcuterie"
+           , "Hygiene"
+           , "Other"])
+        Nothing
+        GroxeryMsg.GroceryDropdownSelected
+
     category =
-      select []
-        [ option [ value "0"  ] [ text "Dairy" ]
-        , option [ value "1"  ] [ text "Meat" ]
-        , option [ value "2"  ] [ text "Seafood" ]
-        , option [ value "3"  ] [ text "Colonial" ]
-        , option [ value "4"  ] [ text "FruitOrVegetable" ]
-        , option [ value "5"  ] [ text "Snacks" ]
-        , option [ value "6"  ] [ text "Drinks" ]
-        , option [ value "7"  ] [ text "Frozen" ]
-        , option [ value "8"  ] [ text "Charcuterie" ]
-        , option [ value "9"  ] [ text "Hygiene" ]
-        , option [ value "10" ] [ text "Other" ]
-        ]
+      Dropdown.dropdown dropdownOptions [] ( Just "Dairy" )
+
     body =
       div []
-        [
+        [ name
+        , category
         ]
   in
     modalWithTitle "New grocery" (text "body") (text "footer")

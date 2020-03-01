@@ -12,8 +12,8 @@ import Style
 view : Model -> Html Msg
 view groceryModel =
   let
-    modal = Modal.newGroceryModal
+    modal = Modal.newGroceryModal groceryModel
   in
     div []
-      [ button [ onClick (GroxeryMsg.OpenModal modal) ] [ text "New grocery" ]
-      ]
+      [ button [ onClick (GroxeryMsg.OpenModal modal) ]
+        [ text "New grocery" ] ]

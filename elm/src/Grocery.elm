@@ -58,6 +58,22 @@ intToGroceryCategory num =
     _  -> Other
 
 
+stringToGroceryCategory : String -> GroceryCategory
+stringToGroceryCategory str =
+  case str of
+    "Dairy"               -> Dairy
+    "Meat"                -> Meat
+    "Seafood"             -> Seafood
+    "Colonial"            -> Colonial
+    "Fruit or vegetable"  -> FruitOrVegetable
+    "Snacks"              -> Snacks
+    "Drinks"              -> Drinks
+    "Frozen"              -> Frozen
+    "Charcuterie"         -> Charcuterie
+    "Hygiene"             -> Hygiene
+    _                     -> Other
+
+
 groceryCategoryToInt : GroceryCategory -> Int
 groceryCategoryToInt cat =
   case cat of

@@ -38,7 +38,9 @@ init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
   let
     route = Url.Parser.parse Routes.routeParser url
-    model = Model key route [] "" Nothing
+    model = Model key route [] "" Nothing { name = ""
+                                          , category = Grocery.Dairy
+                                          , byWeight = True }
   in
     initView model
 
@@ -109,7 +111,7 @@ initView model =
         Routes.GroceryLists ->
           ( model, Requests.getGroceryLists )
         Routes.Groceries ->
-          ( model, Cmd.none )-- TODO init code here
+          ( model, Cmd.none ) -- TODO init code here
         Routes.Inventory ->
           ( model, Cmd.none ) -- TODO init code here
     Nothing ->
