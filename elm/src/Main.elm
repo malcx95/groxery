@@ -102,6 +102,23 @@ update msg model =
         Err _ ->
           ({ model | groceryLists = [] }, Cmd.none)
 
+    GroxeryMsg.GroceryDropdownSelected selection ->
+      case selection of
+        Nothing -> 
+          (model, Cmd.none)
+        Just category ->
+          (model, Cmd.none)
+
+    GroxeryMsg.GroceryNameInputChanged name ->
+      let
+        newGrocery = model.newGrocery
+      in
+        ({ model | newGrocery = { newGrocery | name = name } }, Cmd.none)
+
+    GroxeryMsg.CreateGrocery ->
+      (model, Requests.createGrocery model.newGrocery)
+      
+
 
 initView : Model -> ( Model, Cmd Msg )
 initView model =

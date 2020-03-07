@@ -102,33 +102,37 @@ newGroceryModal model =
     name =
       input [ type_ "text"
             , placeholder "Name"
-            , value model.newGrocery.name ] []
+            , onInput GroxeryMsg.GroceryNameInputChanged ] []
 
     dropdownOptions = 
       Dropdown.Options
         (List.map
          (\x -> Dropdown.Item x x True)
          [ "Dairy"
-           , "Meat"
-           , "Seafood"
-           , "Colonial"
-           , "Fruit or vegetable"
-           , "Snacks"
-           , "Drinks"
-           , "Frozen"
-           , "Charcuterie"
-           , "Hygiene"
-           , "Other"])
+         , "Meat"
+         , "Seafood"
+         , "Colonial"
+         , "Fruit or vegetable"
+         , "Snacks"
+         , "Drinks"
+         , "Frozen"
+         , "Charcuterie"
+         , "Hygiene"
+         , "Other"
+         ])
         Nothing
         GroxeryMsg.GroceryDropdownSelected
 
     category =
       Dropdown.dropdown dropdownOptions [] ( Just "Dairy" )
 
+    submitButton =
+      button [ onClick GroxeryMsg.CreateGrocery ]
+
     body =
       div []
         [ name
-        , category
+        , Html.Styled.fromUnstyled category
         ]
   in
-    modalWithTitle "New grocery" (text "body") (text "footer")
+    modalWithTitle "New grocery" body (text "footer")
