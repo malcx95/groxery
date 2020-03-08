@@ -7,7 +7,7 @@ import Url.Parser
 import Routes exposing (Route)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, on)
 import Html.Styled
 import Html.Styled exposing (toUnstyled)
 import GroxeryMsg exposing (Msg)
@@ -20,6 +20,8 @@ import Http
 import Style
 import UI
 import Task
+import Json.Decode as Decode
+import Elements.Modal as Modal
 
 -- MAIN
 
@@ -117,7 +119,7 @@ update msg model =
 
     GroxeryMsg.CreateGrocery ->
       (model, Requests.createGrocery model.newGrocery)
-      
+
 
 
 initView : Model -> ( Model, Cmd Msg )
@@ -141,6 +143,7 @@ initView model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
+
 
 -- VIEW
 
@@ -169,7 +172,9 @@ view model =
         Nothing ->
           contentContainer
         Just modal ->
-          div []
+          div
+            [ on "click" (containerClickDecoder (GroxeryMsg.CloseModal Nothing))
+            ]
             [ toUnstyled modal
             , contentContainer
             ]
@@ -180,3 +185,15 @@ view model =
              , sidebar
              , contentWithModal ]
     }
+
+
+containerClickDecoder : msg -> Decode.Decoder msg
+containerClickDecoder closeMsg =
+  Decode.at [ "target", "className" ] Decode.string
+    |> Decode.andThen
+      (\c ->
+        if String.contains Modal.modalContainerClass c then
+          Decode.succeed closeMsg
+        else
+          Decode.fail "ignoring"
+      )

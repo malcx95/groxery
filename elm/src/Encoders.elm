@@ -6,18 +6,17 @@ import Grocery exposing ( GroceryList
                         , Grocery
                         , GroceryCategory
                         , Priority
+                        , NewGrocery
                         , groceryCategoryToInt
                         , priorityToInt
                         )
 
 
-groceryEncoder : Grocery -> Encode.Value
-groceryEncoder grocery =
+newGroceryEncoder : NewGrocery -> Encode.Value
+newGroceryEncoder grocery =
   Encode.object
-    [ ( "id", Encode.int grocery.id )
-    , ( "name", Encode.string grocery.name )
+    [ ( "name", Encode.string grocery.name )
     , ( "category", Encode.int <| groceryCategoryToInt <| grocery.category )
     , ( "by_weight", Encode.bool grocery.byWeight )
     ]
-
 

@@ -1,10 +1,15 @@
-module Requests exposing (apiUrl, getGroceryLists, createGroceryList, createGrocery)
+module Requests exposing ( apiUrl
+                         , getGroceryLists
+                         , createGroceryList
+                         , createGrocery
+                         )
 
 import Http
 import GroxeryMsg exposing (Msg)
 import Encoders exposing (..)
-import Grocery exposing (GroceryList, Grocery)
+import Grocery exposing (GroceryList, Grocery, NewGrocery)
 import Decoders exposing (..)
+
 
 apiUrl : String -> String
 apiUrl url =
@@ -25,10 +30,10 @@ createGroceryList name =
     , expect = Http.expectWhatever GroxeryMsg.GroceryListCreated
     }
 
-createGrocery : Grocery -> Cmd Msg
+createGrocery : NewGrocery -> Cmd Msg
 createGrocery grocery =
   Http.post
     { url = apiUrl "grocery/new"
-    , body = Http.jsonBody <| groceryEncoder <| grocery
+    , body = Http.jsonBody <| newGroceryEncoder <| grocery
     , expect = Http.expectWhatever GroxeryMsg.GroceryCreated
     }

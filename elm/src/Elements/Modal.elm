@@ -1,4 +1,4 @@
-module Elements.Modal exposing (newGroceryModal)
+module Elements.Modal exposing (newGroceryModal, modalContainerClass)
 
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -27,14 +27,15 @@ modalStyle =
     , backgroundColor (rgba 0 0 0 0.4)
     ]
 
-contentStyle : Style
-contentStyle =
+contentStyle : Int -> Style
+contentStyle width =
   Css.batch
     [ backgroundColor (hex "#fefefe")
     , margin2 (pct 15) auto
     , padding (px 20)
     , border3 (px 1) solid (hex "#080808")
-    , Css.width (pct 80)
+    , maxWidth (pct <| toFloat <| width)
+    , minWidth (px 100)
     , boxShadow5 (px 0) (px 4) (px 8) (px 0) (rgba 0 0 0 0.2)
     ]
 
@@ -72,14 +73,18 @@ hrStyle =
     [ border3 (px 1) solid (hex "#ccc")
     ]
 
+modalContainerClass : String
+modalContainerClass = "modal-container"
+
 xButton : Html Msg
 xButton =
   div [ css [ xButtonStyle ], onClick <| GroxeryMsg.CloseModal <| Nothing ] [ text "x" ]
 
-generalModal : Html Msg -> Html Msg -> Html Msg -> Html Msg
-generalModal header body footer =
-  div [ css [ modalStyle ] ]
-    [ div [ css [ contentStyle ] ]
+generalModal : Html Msg -> Html Msg -> Html Msg -> Int -> Html Msg
+generalModal header body footer width =
+  div [ class modalContainerClass, css [ modalStyle ] ]
+    [ div [ css [ contentStyle width ] ]
+
         [ xButton
         , div [ css [ headerStyle ] ] [ header, hr [ css [ hrStyle ] ] []]
         , div [ css [ bodyStyle ] ] [ body ]
@@ -88,21 +93,38 @@ generalModal header body footer =
     ]
 
 
-modalWithTitle : String -> Html Msg -> Html Msg -> Html Msg
-modalWithTitle title body footer =
+modalWithTitle : String -> Html Msg -> Html Msg -> Int -> Html Msg
+modalWithTitle title body footer width =
   let
     header = h2 [ css [ Style.textStyle ] ] [ text title ]
   in
-    generalModal header body footer
+    generalModal header body footer width
+
+
+textInputField : String -> (String -> GroxeryMsg.Msg) -> Html Msg
+textInputField fieldText msgOnInput =
+  div []
+    [ div [] [ text fieldText ]
+    , input [ type_ "text"
+            , placeholder fieldText
+            , onInput msgOnInput ] []
+    ]
+
+
+inputField : String -> (String -> GroxeryMsg.Msg) -> Html Msg
+inputField fieldText msgOnInput =
+  div []
+    [ div [] [ text fieldText ]
+    , input [ type_ "text"
+            , placeholder fieldText
+            , onInput msgOnInput ] []
+    ]
 
 
 newGroceryModal : GroceryModel.Model -> Html Msg
 newGroceryModal model =
   let
-    name =
-      input [ type_ "text"
-            , placeholder "Name"
-            , onInput GroxeryMsg.GroceryNameInputChanged ] []
+    name = textInputField "Name" GroxeryMsg.GroceryNameInputChanged
 
     dropdownOptions = 
       Dropdown.Options
@@ -124,15 +146,24 @@ newGroceryModal model =
         GroxeryMsg.GroceryDropdownSelected
 
     category =
-      Dropdown.dropdown dropdownOptions [] ( Just "Dairy" )
+      div []
+        [ Html.Styled.fromUnstyled ( Dropdown.dropdown dropdownOptions [] ( Just "Dairy" ) )
+        ]
 
     submitButton =
-      button [ onClick GroxeryMsg.CreateGrocery ]
+      div []
+        [ button [ onClick GroxeryMsg.CreateGrocery ] [ text "Create" ]
+        ]
 
     body =
       div []
         [ name
-        , Html.Styled.fromUnstyled category
+        , category
+        ]
+    footer =
+      div []
+        [ submitButton
         ]
   in
-    modalWithTitle "New grocery" body (text "footer")
+    modalWithTitle "New grocery" body footer 50
+

@@ -9,6 +9,13 @@ type alias Grocery =
   }
 
 
+type alias NewGrocery =
+  { name: String
+  , category: GroceryCategory
+  , byWeight: Bool
+  }
+
+
 type alias GroceryListEntry =
   { id : Int
   , priority : Priority
