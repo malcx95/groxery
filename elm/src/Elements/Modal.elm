@@ -104,7 +104,7 @@ modalWithTitle title body footer width =
 textInputField : String -> (String -> GroxeryMsg.Msg) -> Html Msg
 textInputField fieldText msgOnInput =
   div []
-    [ div [] [ text fieldText ]
+    [ div [ css [ Style.labelStyle ] ] [ text fieldText ]
     , input [ type_ "text"
             , placeholder fieldText
             , onInput msgOnInput ] []
@@ -114,7 +114,7 @@ textInputField fieldText msgOnInput =
 inputField : String -> (String -> GroxeryMsg.Msg) -> Html Msg
 inputField fieldText msgOnInput =
   div []
-    [ div [] [ text fieldText ]
+    [ div [ css [ Style.labelStyle ] ] [ text fieldText ]
     , input [ type_ "text"
             , placeholder fieldText
             , onInput msgOnInput ] []

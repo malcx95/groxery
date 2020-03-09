@@ -35,6 +35,17 @@ titleStyle =
     , color (rgb 255 255 255)
     ]
 
+
+labelStyle : Style
+labelStyle =
+  Css.batch
+    [ fontFamilies ["Arial", "Helvetica", "sans-serif"]
+    , color (rgb 10 10 10)
+    , fontSize (px 14)
+    , marginBottom (px 3)
+    ]
+
+
 headerStyle : Style
 headerStyle =
   Css.batch
