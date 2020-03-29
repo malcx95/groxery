@@ -101,30 +101,33 @@ modalWithTitle title body footer width =
     generalModal header body footer width
 
 
-textInputField : String -> (String -> GroxeryMsg.Msg) -> Html Msg
-textInputField fieldText msgOnInput =
-  div []
-    [ div [ css [ Style.labelStyle ] ] [ text fieldText ]
-    , input [ type_ "text"
-            , placeholder fieldText
-            , onInput msgOnInput ] []
+inputFieldStyle : Style
+inputFieldStyle =
+  Css.batch 
+    [ marginTop (px 7)
+    , marginBottom (px 7)
     ]
 
 
-inputField : String -> (String -> GroxeryMsg.Msg) -> Html Msg
-inputField fieldText msgOnInput =
-  div []
+textInputField : String -> String -> (String -> GroxeryMsg.Msg) -> Html Msg
+textInputField placeholderText fieldText msgOnInput =
+  inputField (input [ type_ "text"
+                     , placeholder placeholderText
+                     , onInput msgOnInput ] []) fieldText
+
+
+inputField : Html Msg -> String -> Html Msg
+inputField inputElement fieldText =
+  div [ css [ inputFieldStyle ] ]
     [ div [ css [ Style.labelStyle ] ] [ text fieldText ]
-    , input [ type_ "text"
-            , placeholder fieldText
-            , onInput msgOnInput ] []
+    , inputElement
     ]
 
 
 newGroceryModal : GroceryModel.Model -> Html Msg
 newGroceryModal model =
   let
-    name = textInputField "Name" GroxeryMsg.GroceryNameInputChanged
+    name = textInputField "Bostongurka, ketchup..." "Name" GroxeryMsg.GroceryNameInputChanged
 
     dropdownOptions = 
       Dropdown.Options
@@ -146,20 +149,30 @@ newGroceryModal model =
         GroxeryMsg.GroceryDropdownSelected
 
     category =
-      div []
-        [ Html.Styled.fromUnstyled ( Dropdown.dropdown dropdownOptions [] ( Just "Dairy" ) )
-        ]
+      inputField ( Html.Styled.fromUnstyled ( Dropdown.dropdown dropdownOptions [] ( Just "Dairy" ) ) ) "Category"
 
     submitButton =
       div []
-        [ button [ onClick GroxeryMsg.CreateGrocery ] [ text "Create" ]
+        [ button [ onClick <| GroxeryMsg.CloseModal <| (Just GroxeryMsg.CreateNewGrocery ) ] 
+          [ text "Create" ]
+        ]
+
+    byWeightBox =
+      div []
+        [ input [ type_ "checkbox"
+                , onClick GroxeryMsg.GroceryByWeightChanged
+                , Html.Styled.Attributes.checked model.newGrocery.byWeight
+                , id "byWeight" ] [ ]
+        , label [ for "byWeight", css [ Style.labelStyle ] ] [ text "By weight" ]
         ]
 
     body =
       div []
         [ name
         , category
+        , byWeightBox
         ]
+
     footer =
       div []
         [ submitButton

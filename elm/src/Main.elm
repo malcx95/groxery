@@ -42,7 +42,7 @@ init _ url key =
     route = Url.Parser.parse Routes.routeParser url
     model = Model key route [] "" Nothing { name = ""
                                           , category = Grocery.Dairy
-                                          , byWeight = True }
+                                          , byWeight = False }
   in
     initView model
 
@@ -90,12 +90,17 @@ update msg model =
     GroxeryMsg.OpenModal modal ->
       ({ model | currentModal = Just modal }, Cmd.none)
 
-    GroxeryMsg.CloseModal modalResult ->
-      case modalResult of
-        Nothing ->
-          ({ model | currentModal = Nothing }, Cmd.none)
-        Just newGrocery ->
-          ({ model | currentModal = Nothing }, Cmd.none)
+    GroxeryMsg.CloseModal maybeModalResult ->
+      let
+        newModel = { model | currentModal = Nothing }
+      in
+        case maybeModalResult of
+          Nothing ->
+            (newModel, Cmd.none)
+          Just modalResult ->
+            case modalResult of
+              GroxeryMsg.CreateNewGrocery ->
+                (newModel, Requests.createGrocery model.newGrocery)
 
     GroxeryMsg.GroceryCreated result ->
       case result of
@@ -117,9 +122,14 @@ update msg model =
       in
         ({ model | newGrocery = { newGrocery | name = name } }, Cmd.none)
 
-    GroxeryMsg.CreateGrocery ->
-      (model, Requests.createGrocery model.newGrocery)
+    GroxeryMsg.GroceryByWeightChanged ->
+      let
+        newGrocery = model.newGrocery
 
+        newNewGrocery =
+            { newGrocery | byWeight = not newGrocery.byWeight}
+      in
+        ({ model | newGrocery = newNewGrocery }, Cmd.none)
 
 
 initView : Model -> ( Model, Cmd Msg )

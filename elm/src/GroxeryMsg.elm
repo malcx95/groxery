@@ -8,7 +8,7 @@ import Grocery exposing (GroceryList, Grocery)
 
 
 type ModalResult
-  = NewGrocery Grocery
+  = CreateNewGrocery
 
 
 type Msg
@@ -16,12 +16,12 @@ type Msg
   | LinkClicked Browser.UrlRequest
   | UrlChanged Url.Url
   | CreateGroceryList
-  | CreateGrocery
   | GroceryListFieldChanged String
   | GroceryListCreated (Result Http.Error ())
   | GroceryCreated (Result Http.Error ())
   | GroceryDropdownSelected (Maybe String)
   | GroceryNameInputChanged String
+  | GroceryByWeightChanged
   | InitView
   | OpenModal (Html Msg)
   | CloseModal (Maybe ModalResult)
