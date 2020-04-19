@@ -23,5 +23,5 @@ yarn-error.log*
 backend/target
 
 .env
-elm/public
+elm/public/main.js
 elm/elm-stuff

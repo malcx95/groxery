@@ -1,17 +1,16 @@
 module UI exposing (..)
 
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (..)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 import Routes exposing (Route)
 import GroceryModel exposing (Model)
 import GroxeryMsg exposing (Msg)
-import Style
 
 sidebar : Model -> Html Msg
 sidebar model =
-  div [ css [ Style.sideBarStyle ] ]
+  div [ class "side-bar" ]
     [ viewLink "/grocerylists" "Grocery Lists" Routes.GroceryLists model.route
     , viewLink "/groceries" "All Groceries" Routes.Groceries model.route
     , viewLink "/inventory" "Inventory" Routes.Inventory model.route
@@ -19,23 +18,23 @@ sidebar model =
 
 header : Html Msg
 header =
-  div [ css [ Style.headerStyle ] ] [ h1 [ css [ Style.titleStyle ] ] [ text "Groxery" ] ]
+  div [ class "header" ] [ h1 [ class "title" ] [ text "Groxery" ] ]
 
 contentContainer : Html Msg -> Html Msg
 contentContainer view =
-  div [ css [ Style.contentContainerStyle ] ] [ view ]
+  div [ class "content-container" ] [ view ]
 
 viewLink : String -> String -> Routes.Route -> Maybe Routes.Route -> Html Msg
 viewLink path name route selectedRoute =
   let
-    backgroundColor =
+    classNames =
       case selectedRoute of
         Just r ->
-          if route == r then
-            Style.sideBarColorSelected
+          if r == route then
+            "side-bar-link side-bar-color-selected"
           else
-            Style.sideBarColor
+            "side-bar-link side-bar-color-unselected"
         Nothing ->
-          Style.sideBarColor
+            "side-bar-link side-bar-color-unselected"
   in
-    a [ css [ Style.sideBarLinkStyle backgroundColor ], href path ] [ text name ]
+    a [ class classNames, href path ] [ text name ]

@@ -8,20 +8,21 @@ import Routes exposing (Route)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, on)
-import Html.Styled
-import Html.Styled exposing (toUnstyled)
 import GroxeryMsg exposing (Msg)
-import Grocery exposing (Grocery, GroceryList)
+import Grocery exposing ( Grocery
+                        , GroceryList
+                        , stringToGroceryCategory
+                        , emptyNewGrocery )
 import GroceryModel exposing (Model)
 import GroceryListView
 import GroceriesView
 import Requests
 import Http
-import Style
 import UI
 import Task
 import Json.Decode as Decode
-import Elements.Modal as Modal
+import Elements.ModalType as ModalType
+import Bootstrap.CDN as CDN
 
 -- MAIN
 
@@ -40,9 +41,13 @@ init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
   let
     route = Url.Parser.parse Routes.routeParser url
-    model = Model key route [] "" Nothing { name = ""
-                                          , category = Grocery.Dairy
-                                          , byWeight = False }
+    model = Model
+              key
+              route
+              []
+              ""
+              emptyNewGrocery
+              ModalType.allInvisible
   in
     initView model
 
@@ -87,12 +92,15 @@ update msg model =
     GroxeryMsg.InitView ->
       initView model
 
-    GroxeryMsg.OpenModal modal ->
-      ({ model | currentModal = Just modal }, Cmd.none)
+    GroxeryMsg.OpenModal modalType ->
+      let
+        newVisibleModals = ModalType.setVisible model.visibleModals modalType
+      in
+        ({ model | visibleModals = newVisibleModals }, Cmd.none)
 
     GroxeryMsg.CloseModal maybeModalResult ->
       let
-        newModel = { model | currentModal = Nothing }
+        newModel = { model | visibleModals = ModalType.allInvisible }
       in
         case maybeModalResult of
           Nothing ->
@@ -105,16 +113,16 @@ update msg model =
     GroxeryMsg.GroceryCreated result ->
       case result of
         Ok _ ->
-          (model, Cmd.none)
+          ({ model | newGrocery = emptyNewGrocery }, Cmd.none)
         Err _ ->
-          ({ model | groceryLists = [] }, Cmd.none)
+          (model, Cmd.none)
 
     GroxeryMsg.GroceryDropdownSelected selection ->
-      case selection of
-        Nothing -> 
-          (model, Cmd.none)
-        Just category ->
-          (model, Cmd.none)
+      let
+        newGrocery = model.newGrocery
+        newCategory = stringToGroceryCategory selection
+      in
+        ({ model | newGrocery = { newGrocery | category = newCategory } }, Cmd.none)
 
     GroxeryMsg.GroceryNameInputChanged name ->
       let
@@ -122,12 +130,12 @@ update msg model =
       in
         ({ model | newGrocery = { newGrocery | name = name } }, Cmd.none)
 
-    GroxeryMsg.GroceryByWeightChanged ->
+    GroxeryMsg.GroceryByWeightChanged newByWeight ->
       let
         newGrocery = model.newGrocery
 
         newNewGrocery =
-            { newGrocery | byWeight = not newGrocery.byWeight}
+            { newGrocery | byWeight = newByWeight}
       in
         ({ model | newGrocery = newNewGrocery }, Cmd.none)
 
@@ -169,41 +177,18 @@ view model =
             Routes.GroceryLists ->
               (\m -> GroceryListView.view m)
             Routes.Inventory ->
-              (\_ -> Html.Styled.text "Inventory")
+              (\_ -> text "Inventory")
         Nothing ->
-          (\_ -> Html.Styled.h1 []
-            [ Html.Styled.text "Click something in the side bar" ])
+          (\_ -> h1 []
+            [ text "Click something in the side bar" ])
 
-    sidebar = toUnstyled <| UI.sidebar model
-    header = toUnstyled UI.header
-    contentContainer = toUnstyled <| UI.contentContainer <| currentView model
-    contentWithModal =
-      case model.currentModal of
-        Nothing ->
-          contentContainer
-        Just modal ->
-          div
-            [ on "click" (containerClickDecoder (GroxeryMsg.CloseModal Nothing))
-            ]
-            [ toUnstyled modal
-            , contentContainer
-            ]
-        
+    sidebar = UI.sidebar model
+    header = UI.header
+    contentContainer = UI.contentContainer <| currentView model
   in
     { title = "Groxery"
-    , body = [ header
+    , body = [ CDN.stylesheet
+             , header
              , sidebar
-             , contentWithModal ]
+             , contentContainer ]
     }
-
-
-containerClickDecoder : msg -> Decode.Decoder msg
-containerClickDecoder closeMsg =
-  Decode.at [ "target", "className" ] Decode.string
-    |> Decode.andThen
-      (\c ->
-        if String.contains Modal.modalContainerClass c then
-          Decode.succeed closeMsg
-        else
-          Decode.fail "ignoring"
-      )

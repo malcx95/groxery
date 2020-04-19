@@ -1,13 +1,13 @@
 module GroceryListView exposing (view)
 
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (..)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import GroceryModel exposing (Model)
 
 import Grocery exposing (..)
 import GroxeryMsg exposing (..)
-import Style
+
 
 newGroceryListElement : Model -> Html Msg
 newGroceryListElement model =
@@ -20,14 +20,13 @@ newGroceryListElement model =
 viewGroceryListEntry : GroceryListEntry -> Html Msg
 viewGroceryListEntry entry =
   div []
-    [ p [ css [ Style.textStyle ] ] [ text entry.grocery.name ]
+    [ p [ class "text" ] [ text entry.grocery.name ]
     ]
-
 
 viewGroceryList : GroceryList -> Html Msg
 viewGroceryList groceryList =
   div []
-    [ h3 [ css [ Style.textStyle ] ] [ text groceryList.name ]
+    [ h3 [ class "text" ] [ text groceryList.name ]
     , div [] (List.map viewGroceryListEntry groceryList.entries)
     ]
 
@@ -39,7 +38,7 @@ viewGroceryLists model =
 view : Model -> Html Msg
 view groceryModel =
   div [] 
-    [ h1 [ css [ Style.textStyle ] ] [ text "Grocery lists" ]
+    [ h1 [ class "text" ] [ text "Grocery lists" ]
     , p [] [ text "Here are your grocery lists." ]
     , viewGroceryLists groceryModel
     ]

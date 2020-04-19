@@ -48,6 +48,12 @@ type Priority = Low
               | High
 
 
+emptyNewGrocery : NewGrocery
+emptyNewGrocery =
+  { name = ""
+  , category = Dairy
+  , byWeight = False }
+
 intToGroceryCategory : Int -> GroceryCategory
 intToGroceryCategory num =
   case num of

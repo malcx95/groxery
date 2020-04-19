@@ -5,6 +5,7 @@ import Html.Styled exposing (..)
 import Browser
 import Url
 import Grocery exposing (GroceryList, Grocery)
+import Elements.ModalType exposing (..)
 
 
 type ModalResult
@@ -19,9 +20,9 @@ type Msg
   | GroceryListFieldChanged String
   | GroceryListCreated (Result Http.Error ())
   | GroceryCreated (Result Http.Error ())
-  | GroceryDropdownSelected (Maybe String)
+  | GroceryDropdownSelected String
   | GroceryNameInputChanged String
-  | GroceryByWeightChanged
+  | GroceryByWeightChanged Bool
   | InitView
-  | OpenModal (Html Msg)
+  | OpenModal ModalType
   | CloseModal (Maybe ModalResult)

@@ -116,6 +116,40 @@ fn get_page<'r>() -> response::Result<'r> {
         .ok()
 }
 
+#[get("/public/<filename>")]
+fn get_from_public<'r>(filename: String) -> response::Result<'r> {
+    if !["main.js", "style.css"].contains(&filename.as_str()) {
+        return Response::build()
+            .status(Status::NotFound)
+            .header(ContentType::Plain)
+            .ok()
+    }
+    let filepath = format!("../elm/public/{}", filename);
+    let mut file = match File::open(filepath) {
+        Ok(f) => f,
+        Err(_) => {
+            return Response::build()
+                .status(Status::NotFound)
+                .header(ContentType::Plain)
+                .sized_body(
+                    Cursor::new(format!("Could not find {}", filename)))
+                .ok()
+        }
+    };
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+
+    let mut content_type = ContentType::JavaScript;
+    if filename.ends_with(".css") {
+        content_type = ContentType::CSS;
+    }
+    return Response::build()
+        .status(Status::Ok)
+        .header(content_type)
+        .sized_body(Cursor::new(contents))
+        .ok()
+}
+
 
 fn main() -> Result<(), rocket_cors::Error> {
     rocket::ignite()
@@ -127,7 +161,7 @@ fn main() -> Result<(), rocket_cors::Error> {
             add_grocery_to_list,
         ])
         .mount("/", routes![
-            get_page, get_inventory_page, get_grocery_lists_page, get_groceries_page
+            get_page, get_inventory_page, get_grocery_lists_page, get_groceries_page, get_from_public
         ])
         .launch();
     Ok(())

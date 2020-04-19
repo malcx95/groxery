@@ -7,12 +7,13 @@ import Routes exposing (Route)
 import Grocery exposing (GroceryList, GroceryCategory, NewGrocery)
 import GroxeryMsg exposing (Msg)
 import Requests
+import Elements.ModalType exposing (..)
 
 type alias Model =
   { key: Nav.Key
   , route: Maybe Route
   , groceryLists: List GroceryList
   , newGroceryList: String
-  , currentModal: Maybe (Html Msg)
   , newGrocery: NewGrocery
+  , visibleModals: VisibleModals
   }
