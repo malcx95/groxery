@@ -69,10 +69,17 @@ newGroceryModal groceryModel =
           GroxeryMsg.CreateNewGrocery
         Just id ->
           GroxeryMsg.UpdateGrocery id
+
+    titleText =
+      case groceryModel.currentGroceryId of
+        Nothing ->
+          "New Grocery"
+        Just _ ->
+          "Edit Grocery"
   in
     Modal.config (GroxeryMsg.CloseModal Nothing)
       |> Modal.small
-      |> Modal.h5 [] [ text "New Grocery" ]
+      |> Modal.h5 [] [ text titleText ]
       |> Modal.body []
         [ newGroceryForm groceryModel
         ]
