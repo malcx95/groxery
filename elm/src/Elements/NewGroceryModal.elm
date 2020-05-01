@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 import GroceryModel exposing (Model)
-import GroxeryMsg exposing (Msg)
+import GroxeryMsg exposing (Msg, ModalResult)
 
 import Bootstrap.Modal as Modal
 import Bootstrap.Button as Button
@@ -34,12 +34,13 @@ groceryCategoryItems =
     ]
 
 
-newGroceryForm : Html Msg
-newGroceryForm = 
+newGroceryForm : Model -> Html Msg
+newGroceryForm groceryModel =
   Form.form []
   [ Input.text
     [ Input.id "new-grocery-name"
     , Input.attrs [ class "form-input" ]
+    , Input.value groceryModel.newGrocery.name
     , Input.small
     , Input.placeholder "Name"
     , Input.onInput GroxeryMsg.GroceryNameInputChanged
@@ -53,26 +54,36 @@ newGroceryForm =
   , Checkbox.checkbox
     [ Checkbox.id "new-grocery-by-weight"
     , Checkbox.attrs [ class "form-input" ]
+    , Checkbox.checked groceryModel.newGrocery.byWeight
     , Checkbox.onCheck GroxeryMsg.GroceryByWeightChanged
     ] "By weight"
   ]
 
+
 newGroceryModal : Model -> Html Msg
 newGroceryModal groceryModel =
-  Modal.config (GroxeryMsg.CloseModal Nothing)
-    |> Modal.small
-    |> Modal.h5 [] [ text "New Grocery" ]
-    |> Modal.body []
-      [ newGroceryForm
-      ]
-    |> Modal.footer []
-      [ Button.button 
-        [ Button.outlinePrimary
-        , Button.attrs 
-          [ onClick 
-            (GroxeryMsg.CloseModal (Just GroxeryMsg.CreateNewGrocery)) ]
+  let
+    modalResult =
+      case groceryModel.currentGroceryId of
+        Nothing ->
+          GroxeryMsg.CreateNewGrocery
+        Just id ->
+          GroxeryMsg.UpdateGrocery id
+  in
+    Modal.config (GroxeryMsg.CloseModal Nothing)
+      |> Modal.small
+      |> Modal.h5 [] [ text "New Grocery" ]
+      |> Modal.body []
+        [ newGroceryForm groceryModel
         ]
-        [ text "Save" ]
-      ]
-    |> Modal.view groceryModel.visibleModals.newGroceryVisibility
+      |> Modal.footer []
+        [ Button.button
+          [ Button.outlinePrimary
+          , Button.attrs
+            [ onClick 
+              (GroxeryMsg.CloseModal (Just modalResult)) ]
+          ]
+          [ text "Save" ]
+        ]
+      |> Modal.view groceryModel.visibleModals.newGroceryVisibility
 

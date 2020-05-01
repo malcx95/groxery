@@ -101,6 +101,21 @@ pub fn create_grocery(
 }
 
 
+pub fn update_grocery(
+        conn: &PgConnection,
+        id: i32,
+        new_grocery: &NewGrocery
+    ) -> Result<grocery::Grocery, ()> {
+    diesel::update(groceries::table.filter(groceries::id.eq(id)))
+        .set((
+            groceries::name.eq(new_grocery.name.clone()),
+            groceries::category.eq(new_grocery.category),
+            groceries::by_weight.eq(new_grocery.by_weight),
+            ))
+        .get_result::<grocery::Grocery>(conn).or(Err(()))
+}
+
+
 pub fn get_all_groceries(conn: &PgConnection)
         -> Result<Vec<grocery::Grocery>, ()> {
     groceries::table.load::<grocery::Grocery>(conn).or(Err(()))

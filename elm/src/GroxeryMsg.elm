@@ -10,6 +10,7 @@ import Elements.ModalType exposing (..)
 
 type ModalResult
   = CreateNewGrocery
+  | UpdateGrocery Int
 
 
 type Msg
@@ -26,3 +27,6 @@ type Msg
   | InitView
   | OpenModal ModalType
   | CloseModal (Maybe ModalResult)
+  | GroceriesLoaded (Result Http.Error (List Grocery))
+  | EditGrocery Grocery
+  | GroceryEdited (Result Http.Error ())

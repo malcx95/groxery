@@ -34,10 +34,9 @@ viewGroceryLists : Model -> Html Msg
 viewGroceryLists model =
   div [] ((List.map viewGroceryList model.groceryLists) ++ [ newGroceryListElement model ])
 
-
 view : Model -> Html Msg
 view groceryModel =
-  div [] 
+  div []
     [ h1 [ class "text" ] [ text "Grocery lists" ]
     , p [] [ text "Here are your grocery lists." ]
     , viewGroceryLists groceryModel

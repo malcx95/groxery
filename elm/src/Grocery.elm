@@ -48,6 +48,10 @@ type Priority = Low
               | High
 
 
+groceryToNewGrocery : Grocery -> NewGrocery
+groceryToNewGrocery grocery =
+  NewGrocery grocery.name grocery.category grocery.byWeight
+
 emptyNewGrocery : NewGrocery
 emptyNewGrocery =
   { name = ""
@@ -85,6 +89,22 @@ stringToGroceryCategory str =
     "Charcuterie"         -> Charcuterie
     "Hygiene"             -> Hygiene
     _                     -> Other
+
+
+groceryCategoryToString : GroceryCategory -> String
+groceryCategoryToString cat =
+  case cat of
+    Dairy            -> "Dairy"               
+    Meat             -> "Meat"                
+    Seafood          -> "Seafood"             
+    Colonial         -> "Colonial"            
+    FruitOrVegetable -> "Fruit or vegetable"  
+    Snacks           -> "Snacks"              
+    Drinks           -> "Drinks"              
+    Frozen           -> "Frozen"              
+    Charcuterie      -> "Charcuterie"         
+    Hygiene          -> "Hygiene"             
+    Other            -> "Other"
 
 
 groceryCategoryToInt : GroceryCategory -> Int

@@ -44,6 +44,18 @@ fn create_grocery(grocery: Json<db::NewGrocery>)
 }
 
 
+#[put("/grocery/<id>/edit", format = "json", data = "<grocery>")]
+fn edit_grocery(id: i32, grocery: Json<db::NewGrocery>)
+    -> Result<Json<grocery::Grocery>, status::BadRequest<String>> {
+    let new_grocery = grocery.into_inner();
+    let conn = db::establish_connection();
+    match db::update_grocery(&conn, id, &new_grocery) {
+        Ok(grocery) => Ok(Json(grocery)),
+        Err(()) => Err(status::BadRequest(None)),
+    }
+}
+
+
 #[get("/grocery/all")]
 fn get_all_groceries()
     -> Result<Json<Vec<grocery::Grocery>>, status::BadRequest<String>> {
@@ -143,7 +155,7 @@ fn get_from_public<'r>(filename: String) -> response::Result<'r> {
     if filename.ends_with(".css") {
         content_type = ContentType::CSS;
     }
-    return Response::build()
+    Response::build()
         .status(Status::Ok)
         .header(content_type)
         .sized_body(Cursor::new(contents))
@@ -159,9 +171,14 @@ fn main() -> Result<(), rocket_cors::Error> {
             create_grocery_list,
             get_all_groceries,
             add_grocery_to_list,
+            edit_grocery,
         ])
         .mount("/", routes![
-            get_page, get_inventory_page, get_grocery_lists_page, get_groceries_page, get_from_public
+            get_page,
+            get_inventory_page,
+            get_grocery_lists_page,
+            get_groceries_page,
+            get_from_public,
         ])
         .launch();
     Ok(())

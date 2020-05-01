@@ -12,7 +12,10 @@ import GroxeryMsg exposing (Msg)
 import Grocery exposing ( Grocery
                         , GroceryList
                         , stringToGroceryCategory
-                        , emptyNewGrocery )
+                        , emptyNewGrocery
+                        , groceryToNewGrocery
+                        )
+import Elements.ModalType as ModalType
 import GroceryModel exposing (Model)
 import GroceryListView
 import GroceriesView
@@ -47,7 +50,9 @@ init _ url key =
               []
               ""
               emptyNewGrocery
+              Nothing
               ModalType.allInvisible
+              Nothing
   in
     initView model
 
@@ -93,10 +98,7 @@ update msg model =
       initView model
 
     GroxeryMsg.OpenModal modalType ->
-      let
-        newVisibleModals = ModalType.setVisible model.visibleModals modalType
-      in
-        ({ model | visibleModals = newVisibleModals }, Cmd.none)
+      (openModal model modalType, Cmd.none)
 
     GroxeryMsg.CloseModal maybeModalResult ->
       let
@@ -109,11 +111,23 @@ update msg model =
             case modalResult of
               GroxeryMsg.CreateNewGrocery ->
                 (newModel, Requests.createGrocery model.newGrocery)
+              GroxeryMsg.UpdateGrocery id ->
+                (newModel, Requests.editGrocery id model.newGrocery)
 
     GroxeryMsg.GroceryCreated result ->
       case result of
         Ok _ ->
-          ({ model | newGrocery = emptyNewGrocery }, Cmd.none)
+          let
+            command =
+              case model.route of
+                Just r ->
+                  case r of
+                    Routes.Groceries ->
+                      Requests.getAllGroceries
+                    _ -> Cmd.none
+                _ -> Cmd.none
+          in
+            ({ model | newGrocery = emptyNewGrocery }, command)
         Err _ ->
           (model, Cmd.none)
 
@@ -139,6 +153,40 @@ update msg model =
       in
         ({ model | newGrocery = newNewGrocery }, Cmd.none)
 
+    GroxeryMsg.GroceriesLoaded result ->
+      case result of
+        Ok groceries ->
+          ({ model | loadedGroceries = Just groceries }, Cmd.none)
+
+        Err _ ->
+          ({ model | loadedGroceries = Nothing }, Cmd.none)
+
+    GroxeryMsg.EditGrocery grocery ->
+      let
+        newModel =
+          { model | newGrocery = groceryToNewGrocery grocery
+                  , currentGroceryId = Just grocery.id }
+      in
+        (openModal newModel ModalType.NewGrocery, Cmd.none)
+
+    GroxeryMsg.GroceryEdited result ->
+      let
+        newModel = { model | currentGroceryId = Nothing }
+      in
+        case result of
+          Ok _ ->
+            (newModel, Requests.getAllGroceries)
+          Err _ ->
+            (newModel, Cmd.none)
+
+
+openModal : Model -> ModalType.ModalType -> Model
+openModal model modalType =
+  let
+    newVisibleModals = ModalType.setVisible model.visibleModals modalType
+  in
+    { model | visibleModals = newVisibleModals }
+
 
 initView : Model -> ( Model, Cmd Msg )
 initView model =
@@ -148,7 +196,7 @@ initView model =
         Routes.GroceryLists ->
           ( model, Requests.getGroceryLists )
         Routes.Groceries ->
-          ( model, Cmd.none ) -- TODO init code here
+          ( model, Requests.getAllGroceries )
         Routes.Inventory ->
           ( model, Cmd.none ) -- TODO init code here
     Nothing ->
