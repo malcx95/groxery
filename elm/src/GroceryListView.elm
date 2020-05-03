@@ -3,8 +3,10 @@ module GroceryListView exposing (view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import GroceryModel exposing (Model)
+import Bootstrap.Card as Card
+import Bootstrap.ListGroup as ListGroup
 
+import GroceryModel exposing (Model)
 import Grocery exposing (..)
 import GroxeryMsg exposing (..)
 
@@ -17,22 +19,29 @@ newGroceryListElement model =
     , button [ onClick GroxeryMsg.CreateGroceryList ] [ text "Create" ]
     ]
 
-viewGroceryListEntry : GroceryListEntry -> Html Msg
+viewGroceryListEntry : GroceryListEntry -> ListGroup.Item Msg
 viewGroceryListEntry entry =
-  div []
-    [ p [ class "text" ] [ text entry.grocery.name ]
-    ]
+  ListGroup.li [] [ text entry.grocery.name ]
+  -- div []
+  --   [ p [ class "text" ] [ text entry.grocery.name ]
+  --   ]
 
 viewGroceryList : GroceryList -> Html Msg
 viewGroceryList groceryList =
-  div []
-    [ h3 [ class "text" ] [ text groceryList.name ]
-    , div [] (List.map viewGroceryListEntry groceryList.entries)
-    ]
+  -- div []
+  --   [ h3 [ class "text" ] [ text groceryList.name ]
+  --   , div [] (List.map viewGroceryListEntry groceryList.entries)
+  --   ]
+  Card.config [ Card.attrs [ class "grocery-list-card" ] ]
+    |> Card.headerH2 [] [ text groceryList.name ]
+    |> Card.footer [] [ text "dis is foot" ]
+    |> Card.listGroup (List.map viewGroceryListEntry groceryList.entries)
+    |> Card.view
 
 viewGroceryLists : Model -> Html Msg
 viewGroceryLists model =
-  div [] ((List.map viewGroceryList model.groceryLists) ++ [ newGroceryListElement model ])
+  div [ class "list-container" ] 
+    (List.map viewGroceryList model.groceryLists)
 
 view : Model -> Html Msg
 view groceryModel =
@@ -40,4 +49,5 @@ view groceryModel =
     [ h1 [ class "text" ] [ text "Grocery lists" ]
     , p [] [ text "Here are your grocery lists." ]
     , viewGroceryLists groceryModel
+    , newGroceryListElement groceryModel
     ]

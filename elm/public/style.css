@@ -71,3 +71,13 @@
 .new-grocery-button {
   margin-bottom: 10px;
 }
+
+.list-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.grocery-list-card {
+  margin: 20px;
+  width: 250px;
+}

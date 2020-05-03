@@ -14,6 +14,9 @@ pub struct Grocery {
 }
 
 
+// TODO: Add "amount", which is a string in the database
+// to handle both by weight and not. Create an enum for amount.
+// Also add "checked" property
 #[derive(Serialize, Deserialize, Clone)]
 pub struct GroceryListEntry {
     pub id: i32,
