@@ -4,6 +4,7 @@ module Requests exposing ( apiUrl
                          , createGrocery
                          , getAllGroceries
                          , editGrocery
+                         , setGroceryListEntryChecked
                          )
 
 import Http
@@ -11,6 +12,10 @@ import GroxeryMsg exposing (Msg)
 import Encoders exposing (..)
 import Grocery exposing (GroceryList, Grocery, NewGrocery)
 import Decoders exposing (..)
+
+
+boolToString : Bool -> String
+boolToString b = if b then "true" else "false"
 
 
 apiUrl : String -> String
@@ -36,7 +41,7 @@ createGroceryList name =
   Http.post
     { url = apiUrl "grocerylist/new"
     , body = Http.stringBody "application/text" name
-    , expect = Http.expectWhatever GroxeryMsg.GroceryListCreated
+    , expect = Http.expectJson GroxeryMsg.GroceryListCreated groceryListsDecoder
     }
 
 createGrocery : NewGrocery -> Cmd Msg
@@ -55,6 +60,21 @@ editGrocery id grocery =
     , url = apiUrl "grocery/" ++ (String.fromInt id) ++ "/edit"
     , body = Http.jsonBody <| newGroceryEncoder <| grocery
     , expect = Http.expectWhatever GroxeryMsg.GroceryCreated
+    , timeout = Nothing
+    , tracker = Nothing
+    }
+
+setGroceryListEntryChecked : Int -> Bool -> Cmd Msg
+setGroceryListEntryChecked id checked =
+  Http.request
+    { method = "PUT"
+    , headers = []
+    , url = apiUrl "grocerylist/check/"
+                    ++ (String.fromInt id)
+                    ++ "/" 
+                    ++ (boolToString checked)
+    , body = Http.emptyBody
+    , expect = Http.expectJson GroxeryMsg.GroceryListEntryCheckedChanged groceryListsDecoder
     , timeout = Nothing
     , tracker = Nothing
     }

@@ -89,10 +89,11 @@ update msg model =
 
     GroxeryMsg.GroceryListCreated result ->
       case result of
-        Ok _ ->
-          (model, Cmd.none)
+        Ok groceryLists ->
+          ({ model | groceryLists = groceryLists, newGroceryList = "" },
+          Cmd.none)
         Err _ ->
-          ({ model | groceryLists = [] }, Cmd.none)
+          (model, Cmd.none)
 
     GroxeryMsg.InitView ->
       initView model
@@ -178,6 +179,21 @@ update msg model =
             (newModel, Requests.getAllGroceries)
           Err _ ->
             (newModel, Cmd.none)
+
+    GroxeryMsg.GroceryListEntryClicked entry ->
+      let
+        id = entry.id
+        checked = not entry.checked
+      in
+        (model, Requests.setGroceryListEntryChecked id checked)
+
+    GroxeryMsg.GroceryListEntryCheckedChanged result ->
+      case result of
+        Ok groceryLists ->
+          ({ model | groceryLists = groceryLists }, Cmd.none)
+        Err _ ->
+          (model, Cmd.none)
+
 
 
 openModal : Model -> ModalType.ModalType -> Model

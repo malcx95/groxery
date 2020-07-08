@@ -69,12 +69,12 @@ fn get_all_groceries()
 
 #[post("/grocerylist/new", data = "<name>")]
 fn create_grocery_list(name: String)
-    -> Result<Json<grocery::GroceryList>, status::BadRequest<String>> {
+    -> Result<Json<Vec<grocery::GroceryList>>, status::BadRequest<String>> {
     let new_grocery_list = db::NewGroceryList { name };
     let conn = db::establish_connection();
     match db::create_grocery_list(&conn, &new_grocery_list) {
-        Ok(grocery_list) => Ok(Json(grocery_list)),
-        Err(()) => Err(status::BadRequest(None)),
+        Ok(grocery_lists) => Ok(Json(grocery_lists)),
+        Err(()) => Err(status::BadRequest(None))
     }
 }
 
@@ -86,6 +86,17 @@ fn add_grocery_to_list(new_entry: Json<db::NewGroceryListEntry>)
     let conn = db::establish_connection();
     db::add_grocery_to_list(&conn, &entry)
         .or(Err(status::BadRequest(None)))
+}
+
+
+#[put("/grocerylist/check/<id>/<check>")]
+fn set_grocery_list_entry_checked(id: i32, check: bool)
+    -> Result<Json<Vec<grocery::GroceryList>>, status::BadRequest<String>> {
+    let conn = db::establish_connection();
+    match db::set_grocery_list_entry_checked(&conn, id, check) {
+        Ok(grocery_lists) => Ok(Json(grocery_lists)),
+        Err(()) => Err(status::BadRequest(None))
+    }
 }
 
 
@@ -127,6 +138,7 @@ fn get_page<'r>() -> response::Result<'r> {
         .sized_body(Cursor::new(contents))
         .ok()
 }
+
 
 #[get("/public/<filename>")]
 fn get_from_public<'r>(filename: String) -> response::Result<'r> {
@@ -172,6 +184,7 @@ fn main() -> Result<(), rocket_cors::Error> {
             get_all_groceries,
             add_grocery_to_list,
             edit_grocery,
+            set_grocery_list_entry_checked,
         ])
         .mount("/", routes![
             get_page,

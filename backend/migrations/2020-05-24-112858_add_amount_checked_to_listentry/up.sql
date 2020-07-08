@@ -1,0 +1,5 @@
+ALTER TABLE grocery_list_entries
+ADD COLUMN amount VARCHAR(255) NOT NULL DEFAULT '';
+
+ALTER TABLE grocery_list_entries
+ADD COLUMN checked BOOLEAN NOT NULL DEFAULT FALSE;

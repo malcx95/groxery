@@ -20,6 +20,8 @@ type alias GroceryListEntry =
   { id : Int
   , priority : Priority
   , grocery : Grocery
+  , amount: Maybe String
+  , checked: Bool
   }
 
 
@@ -46,7 +48,6 @@ type GroceryCategory = Dairy
 type Priority = Low
               | Medium
               | High
-
 
 groceryToNewGrocery : Grocery -> NewGrocery
 groceryToNewGrocery grocery =
@@ -138,3 +139,4 @@ priorityToInt p =
     Low -> 0
     Medium -> 1
     High -> 2
+

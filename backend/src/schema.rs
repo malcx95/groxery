@@ -13,6 +13,8 @@ table! {
         list_id -> Int4,
         priority -> Int4,
         grocery_id -> Int4,
+        amount -> Varchar,
+        checked -> Bool,
     }
 }
 

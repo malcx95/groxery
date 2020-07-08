@@ -81,3 +81,49 @@
   margin: 20px;
   width: 250px;
 }
+
+.grocery-check-list-item {
+  padding-left: 10px;
+  padding-top: 3px;
+  display: block;
+  text-align: left;
+  height: 30px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,.125);
+  -o-transition:background-color .1s ease-out;
+  -ms-transition:background-color .1s ease-out;
+  -moz-transition:background-color .1s ease-out;
+  -webkit-transition:background-color .1s ease-out;
+  transition:background-color .1s ease-out;
+}
+
+.grocery-check-list-item-checked {
+  background-color: #00FF00;
+}
+
+.grocery-check-list-item-checked:hover {
+  background-color: #80FF80;
+}
+
+.grocery-check-list-item-unchecked {
+  background-color: #E0E0E0;
+}
+
+.grocery-check-list-item-unchecked:hover {
+  background-color: #e6ede6;
+}
+
+.grocery-list-block {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.grocery-list-card-body {
+  padding: 0px !important;
+}
+
+.grocery-check-button {
+}

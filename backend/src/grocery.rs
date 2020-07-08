@@ -3,6 +3,12 @@ use std::vec::Vec;
 
 use crate::schema::*;
 
+#[derive(Serialize, Deserialize, Clone)]
+pub enum Amount {
+    Weight(String),
+    Number(u32),
+}
+
 
 #[derive(Identifiable, Queryable, Serialize, Deserialize, Clone)]
 #[table_name="groceries"]
@@ -22,6 +28,8 @@ pub struct GroceryListEntry {
     pub id: i32,
     pub priority: i32,
     pub grocery: Grocery,
+    pub amount: Option<Amount>,
+    pub checked: bool,
 }
 
 

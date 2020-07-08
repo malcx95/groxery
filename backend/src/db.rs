@@ -32,6 +32,8 @@ pub struct NewGroceryListEntry {
     pub list_id: i32,
     pub priority: i32,
     pub grocery_id: i32,
+    pub amount: String,
+    pub checked: bool,
 }
 
 
@@ -42,6 +44,8 @@ struct DbGroceryListEntry {
     list_id: i32,
     priority: i32,
     grocery_id: i32,
+    amount: String,
+    checked: bool,
 }
 
 #[derive(Queryable)]
@@ -72,10 +76,22 @@ impl DbGroceryListEntry {
 
     fn to_grocery_list_entry(&self, grocery: grocery::Grocery)
         -> grocery::GroceryListEntry {
+        let amount: Option<grocery::Amount>;
+        if self.amount == "".to_string() {
+            amount = None;
+        } else if grocery.by_weight {
+            amount = Some(grocery::Amount::Weight(self.amount.clone()));
+        } else {
+            amount = Some(grocery::Amount::Number(
+                self.amount.parse::<u32>().unwrap()
+            ));
+        }
         grocery::GroceryListEntry {
             id: self.id,
             priority: self.priority,
             grocery: grocery,
+            amount: amount,
+            checked: self.checked
         }
     }
 }
@@ -140,11 +156,11 @@ pub fn get_grocery_by_id(conn: &PgConnection, id: i32)
 
 pub fn create_grocery_list(
     conn: &PgConnection, new_grocery_list: &NewGroceryList
-    ) -> Result<grocery::GroceryList, ()> {
+    ) -> Result<Vec<grocery::GroceryList>, ()> {
     match diesel::insert_into(grocery_lists::table)
         .values(new_grocery_list)
-        .get_result::<DbGroceryList>(conn) {
-        Ok(list) => Ok(list.to_empty_grocery_list()),
+        .execute(conn) {
+        Ok(list) => get_all_grocery_lists(conn),
         Err(_) => Err(()),
     }
 }
@@ -190,3 +206,18 @@ pub fn add_grocery_to_list(
         Err(_) => Err(())
     }
 }
+
+
+pub fn set_grocery_list_entry_checked(
+    conn: &PgConnection, id: i32, check: bool)
+    -> Result<Vec<grocery::GroceryList>, ()> {
+
+    match diesel::update(grocery_list_entries::table.filter(
+            grocery_list_entries::id.eq(id)))
+        .set(grocery_list_entries::checked.eq(check))
+        .execute(conn) {
+        Ok(_) => get_all_grocery_lists(conn),
+        Err(_) => Err(())
+    }
+}
+

@@ -4,7 +4,7 @@ import Http
 import Html.Styled exposing (..)
 import Browser
 import Url
-import Grocery exposing (GroceryList, Grocery)
+import Grocery exposing (GroceryList, Grocery, GroceryListEntry)
 import Elements.ModalType exposing (..)
 
 
@@ -19,7 +19,7 @@ type Msg
   | UrlChanged Url.Url
   | CreateGroceryList
   | GroceryListFieldChanged String
-  | GroceryListCreated (Result Http.Error ())
+  | GroceryListCreated (Result Http.Error (List GroceryList))
   | GroceryCreated (Result Http.Error ())
   | GroceryDropdownSelected String
   | GroceryNameInputChanged String
@@ -30,3 +30,5 @@ type Msg
   | GroceriesLoaded (Result Http.Error (List Grocery))
   | EditGrocery Grocery
   | GroceryEdited (Result Http.Error ())
+  | GroceryListEntryClicked GroceryListEntry
+  | GroceryListEntryCheckedChanged (Result Http.Error (List GroceryList))

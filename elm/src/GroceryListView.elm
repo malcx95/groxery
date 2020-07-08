@@ -1,15 +1,25 @@
 module GroceryListView exposing (view)
 
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Bootstrap.Card as Card
+import Bootstrap.Card.Block as Block
 import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Button as Button
 
 import GroceryModel exposing (Model)
 import Grocery exposing (..)
 import GroxeryMsg exposing (..)
+import Elements.GroceryListItem exposing (groceryListItem)
 
+sortGroceryListEntries : GroceryList -> List GroceryListEntry
+sortGroceryListEntries groceryList =
+  let
+    compFn a b = compare a.grocery.name b.grocery.name
+  in
+    List.sortWith compFn groceryList.entries
 
 newGroceryListElement : Model -> Html Msg
 newGroceryListElement model =
@@ -21,21 +31,25 @@ newGroceryListElement model =
 
 viewGroceryListEntry : GroceryListEntry -> ListGroup.Item Msg
 viewGroceryListEntry entry =
-  ListGroup.li [] [ text entry.grocery.name ]
-  -- div []
-  --   [ p [ class "text" ] [ text entry.grocery.name ]
-  --   ]
+  ListGroup.li [ ListGroup.attrs [ class "grocery-check-list-item" ] ]
+    [ Button.checkboxButton False 
+      [ Button.attrs [ class "grocery-check-button" ] ]
+      [ text entry.grocery.name ] ]
+
+groceryListBlock : GroceryList -> Html Msg
+groceryListBlock groceryList =
+  div [ class "grocery-list-block" ]
+    (List.map groceryListItem (sortGroceryListEntries groceryList))
+
 
 viewGroceryList : GroceryList -> Html Msg
 viewGroceryList groceryList =
-  -- div []
-  --   [ h3 [ class "text" ] [ text groceryList.name ]
-  --   , div [] (List.map viewGroceryListEntry groceryList.entries)
-  --   ]
   Card.config [ Card.attrs [ class "grocery-list-card" ] ]
     |> Card.headerH2 [] [ text groceryList.name ]
     |> Card.footer [] [ text "dis is foot" ]
-    |> Card.listGroup (List.map viewGroceryListEntry groceryList.entries)
+    |> Card.block [ Block.attrs [ class "grocery-list-card-body" ] ] 
+      [ Block.custom <| groceryListBlock <| groceryList ]
+    --|> Card.block (List.map viewGroceryListEntry groceryList.entries)
     |> Card.view
 
 viewGroceryLists : Model -> Html Msg

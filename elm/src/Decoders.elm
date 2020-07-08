@@ -6,9 +6,11 @@ import Json.Decode exposing ( Decoder
                             , bool
                             , int
                             , list
+                            , nullable
                             , map
                             , map3
-                            , map4)
+                            , map4
+                            , map5)
 
 import Grocery exposing ( GroceryList
                         , GroceryListEntry
@@ -31,10 +33,12 @@ groceryDecoder =
 
 groceryListEntryDecoder : Decoder GroceryListEntry
 groceryListEntryDecoder =
-  map3 GroceryListEntry
+  map5 GroceryListEntry
     (field "id" int)
     (field "priority" (map intToPriority int))
     (field "grocery" groceryDecoder)
+    (field "amount" (nullable string))
+    (field "checked" bool)
 
 
 groceryListDecoder : Decoder GroceryList
