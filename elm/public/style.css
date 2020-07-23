@@ -79,7 +79,7 @@
 
 .grocery-list-card {
   margin: 20px;
-  width: 250px;
+  width: 300px;
 }
 
 .grocery-check-list-item {
@@ -98,11 +98,13 @@
 }
 
 .grocery-check-list-item-checked {
-  background-color: #00FF00;
+  background-color: #dbaf91;
+  text-decoration: line-through;
 }
 
 .grocery-check-list-item-checked:hover {
-  background-color: #80FF80;
+  background-color: #dbbba4;
+  text-decoration: line-through;
 }
 
 .grocery-check-list-item-unchecked {
@@ -110,7 +112,7 @@
 }
 
 .grocery-check-list-item-unchecked:hover {
-  background-color: #e6ede6;
+  background-color: #F2F2F2;
 }
 
 .grocery-list-block {
@@ -125,5 +127,58 @@
   padding: 0px !important;
 }
 
-.grocery-check-button {
+.new-grocery-check-list-item {
+  padding-left: 10px;
+  padding-top: 3px;
+  display: block;
+  text-align: center;
+  height: 30px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,.125);
+  -o-transition-duration: .2s;
+  -ms-transition-duration: .2s;
+  -moz-transition-duration: .2s;
+  -webkit-transition-duration: .2s;
+  transition-duration: .2s;
+  background-color: #C0C0C0;
+  color: #000;
 }
+
+.new-grocery-check-list-item:hover {
+  background-color: #A3F57D;
+  color: #FFF;
+}
+
+.grocery-list-editable-item {
+  padding: 5px;
+}
+
+.grocery-list-footer {
+
+}
+
+.groceries-input-box {
+  width: 50%;
+}
+
+.groceries-suggestions-div {
+  position: absolute;
+  background-color: #EEEEEE;
+  width: 100%;
+}
+
+.groceries-suggestions-list {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+.groceries-suggestions-item {
+  border: 1px;
+}
+
+.groceries-suggestions-item-selected {
+  background-color: #c5d2dd;
+  font-weight: bold;
+  cursor: pointer;
+}
+

@@ -160,7 +160,7 @@ pub fn create_grocery_list(
     match diesel::insert_into(grocery_lists::table)
         .values(new_grocery_list)
         .execute(conn) {
-        Ok(list) => get_all_grocery_lists(conn),
+        Ok(_) => get_all_grocery_lists(conn),
         Err(_) => Err(()),
     }
 }
@@ -221,3 +221,14 @@ pub fn set_grocery_list_entry_checked(
     }
 }
 
+
+pub fn query_groceries(conn: &PgConnection, query_str: &str, limit: i64)
+    -> Result<Vec<grocery::Grocery>, ()> {
+    match groceries::table
+        .filter(groceries::name.ilike(String::from("%") + query_str + "%"))
+        .limit(limit)
+        .load::<grocery::Grocery>(conn) {
+            Ok(groceries) => Ok(groceries),
+            Err(_) => Err(())
+    }
+}

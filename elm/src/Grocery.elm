@@ -9,6 +9,12 @@ type alias Grocery =
   }
 
 
+type alias GroceryQuerySuggestion =
+  { id: Int
+  , name : String
+  }
+
+
 type alias NewGrocery =
   { name: String
   , category: GroceryCategory
@@ -22,6 +28,13 @@ type alias GroceryListEntry =
   , grocery : Grocery
   , amount: Maybe String
   , checked: Bool
+  }
+
+
+type alias NewGroceryListEntry =
+  { priority : Priority
+  , groceryId : Int
+  , amount: Maybe String
   }
 
 
@@ -52,6 +65,10 @@ type Priority = Low
 groceryToNewGrocery : Grocery -> NewGrocery
 groceryToNewGrocery grocery =
   NewGrocery grocery.name grocery.category grocery.byWeight
+
+emptyNewGroceryListEntry : NewGroceryListEntry
+emptyNewGroceryListEntry =
+  NewGroceryListEntry Low -1 Nothing
 
 emptyNewGrocery : NewGrocery
 emptyNewGrocery =

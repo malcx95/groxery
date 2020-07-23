@@ -14,9 +14,11 @@ import Grocery exposing ( Grocery
                         , stringToGroceryCategory
                         , emptyNewGrocery
                         , groceryToNewGrocery
+                        , emptyNewGroceryListEntry
                         )
+import Elements.SearchableInput exposing ( searchableInputUpdate )
 import Elements.ModalType as ModalType
-import GroceryModel exposing (Model)
+import GroceryModel exposing (Model, defaultSearchableInputState)
 import GroceryListView
 import GroceriesView
 import Requests
@@ -53,6 +55,9 @@ init _ url key =
               Nothing
               ModalType.allInvisible
               Nothing
+              Nothing
+              Nothing
+              defaultSearchableInputState
   in
     initView model
 
@@ -194,6 +199,18 @@ update msg model =
         Err _ ->
           (model, Cmd.none)
 
+    GroxeryMsg.GroceryListEditButtonClicked id ->
+      ({model | editingGroceryList = Just id}, Cmd.none)
+
+    GroxeryMsg.GroceryListAddItemButtonClicked id ->
+      ({model | newGroceryListEntry = Just emptyNewGroceryListEntry}, Cmd.none)
+
+    GroxeryMsg.GroceryListDoneButtonClicked ->
+      ({model | editingGroceryList = Nothing
+              , newGroceryListEntry = Nothing}, Cmd.none)
+
+    GroxeryMsg.SearchableInputEvent simsg ->
+      searchableInputUpdate model simsg
 
 
 openModal : Model -> ModalType.ModalType -> Model

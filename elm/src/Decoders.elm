@@ -1,6 +1,7 @@
 module Decoders exposing (..)
 
 import Json.Decode exposing ( Decoder
+                            , index
                             , field
                             , string
                             , bool
@@ -8,6 +9,7 @@ import Json.Decode exposing ( Decoder
                             , list
                             , nullable
                             , map
+                            , map2
                             , map3
                             , map4
                             , map5)
@@ -15,6 +17,7 @@ import Json.Decode exposing ( Decoder
 import Grocery exposing ( GroceryList
                         , GroceryListEntry
                         , Grocery
+                        , GroceryQuerySuggestion
                         , GroceryCategory
                         , Priority
                         , intToGroceryCategory
@@ -57,3 +60,15 @@ groceryListsDecoder =
 groceriesDecoder : Decoder (List Grocery)
 groceriesDecoder =
   list groceryDecoder
+
+
+groceryQuerySuggestionDecoder : Decoder GroceryQuerySuggestion
+groceryQuerySuggestionDecoder =
+  map2 GroceryQuerySuggestion
+    (index 1 int)
+    (index 0 string)
+
+
+groceryQuerySuggestionsDecoder : Decoder (List GroceryQuerySuggestion)
+groceryQuerySuggestionsDecoder =
+  list groceryQuerySuggestionDecoder

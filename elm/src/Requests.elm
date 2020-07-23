@@ -5,6 +5,8 @@ module Requests exposing ( apiUrl
                          , getAllGroceries
                          , editGrocery
                          , setGroceryListEntryChecked
+                         , queryGrocery
+                         , getGroceryById
                          )
 
 import Http
@@ -78,3 +80,24 @@ setGroceryListEntryChecked id checked =
     , timeout = Nothing
     , tracker = Nothing
     }
+
+
+queryGrocery : String -> Cmd Msg
+queryGrocery queryString =
+  Http.get
+    { url = apiUrl "grocery/query?query_str=" ++ queryString
+    , expect =
+        Http.expectJson
+          (\r -> GroxeryMsg.SearchableInputEvent (GroxeryMsg.GotSuggestions r))
+          groceryQuerySuggestionsDecoder
+    }
+
+
+getGroceryById : Int -> (Result Http.Error Grocery -> Msg) -> Cmd Msg
+getGroceryById id msg =
+  Http.get
+    { url = apiUrl "grocery/id" ++ String.fromInt id
+    , expect = Http.expectJson msg groceryDecoder
+    }
+
+

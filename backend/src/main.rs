@@ -100,6 +100,32 @@ fn set_grocery_list_entry_checked(id: i32, check: bool)
 }
 
 
+#[get("/grocery/query?<query_str>")]
+fn query_grocery(query_str: String)
+    -> Result<Json<Vec<(String, i32)>>, status::BadRequest<String>> {
+    let conn = db::establish_connection();
+    let matched_groceries = match db::query_groceries(&conn, &query_str.to_string(), 5) {
+        Ok(groceries) => groceries,
+        Err(()) => return Err(status::BadRequest(None)),
+    };
+    let stripped_groceries = matched_groceries.iter()
+        .map(|g| (g.name.clone(), g.id))
+        .collect();
+
+    Ok(Json(stripped_groceries))
+}
+
+#[get("/grocery/<id>")]
+fn get_grocery_by_id(id: i32)
+    -> Result<Json<grocery::Grocery>, status::BadRequest<String>> {
+    let conn = db::establish_connection();
+    match db::get_grocery_by_id(&conn, id) {
+        Ok(Some(grocery)) => Ok(Json(grocery)),
+        _ => Err(status::BadRequest(None)),
+    }
+}
+
+
 #[get("/groceries")]
 fn get_groceries_page<'r>() -> response::Result<'r> {
     get_page()
@@ -185,6 +211,8 @@ fn main() -> Result<(), rocket_cors::Error> {
             add_grocery_to_list,
             edit_grocery,
             set_grocery_list_entry_checked,
+            query_grocery,
+            get_grocery_by_id,
         ])
         .mount("/", routes![
             get_page,
