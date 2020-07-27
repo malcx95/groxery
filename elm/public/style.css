@@ -182,3 +182,14 @@
   cursor: pointer;
 }
 
+.searchable-input-selected {
+  background-color: #c4e0c0;
+  border-radius: 3px;
+  padding: 2px;
+}
+
+.searchable-input-selected:hover {
+  background-color: #40e82e;
+  cursor: pointer;
+  color: #fff;
+}

@@ -23,13 +23,13 @@ groceryListIsInEditMode model id =
 groceryListItem : Model -> Int -> GroceryListEntry -> Html Msg
 groceryListItem model groceryListId entry =
   let
-    checkedClass = 
+    checkedClass =
       if entry.checked && (not (groceryListIsInEditMode model groceryListId)) then
         "grocery-check-list-item-checked"
       else
         "grocery-check-list-item-unchecked"
   in
-    div 
+    div
       [ class <| "grocery-check-list-item " ++ checkedClass
       , onClick <| GroceryListEntryClicked entry
       ]
@@ -43,10 +43,13 @@ groceryListItem model groceryListId entry =
 -- som redan finns där. Om det får plats, checkrutor som man kan använda för
 -- att radera items.
 
+
+
+
 editableGroceryListItem : Model -> NewGroceryListEntry -> Html Msg
 editableGroceryListItem model entry =
   div [ class "grocery-list-editable-item" ]
-    [ searchableInput model
+    [ searchableInput model "groceries-input-box"
     ]
 
 

@@ -96,7 +96,7 @@ queryGrocery queryString =
 getGroceryById : Int -> (Result Http.Error Grocery -> Msg) -> Cmd Msg
 getGroceryById id msg =
   Http.get
-    { url = apiUrl "grocery/id" ++ String.fromInt id
+    { url = apiUrl "grocery/" ++ String.fromInt id
     , expect = Http.expectJson msg groceryDecoder
     }
 

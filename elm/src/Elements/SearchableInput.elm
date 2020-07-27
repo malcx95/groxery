@@ -7,14 +7,37 @@ module Elements.SearchableInput exposing ( searchableInput
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Browser.Dom as Dom
+import Task
 import Grocery exposing (..)
 import GroxeryMsg exposing (..)
-import GroceryModel exposing (Model)
+import GroceryModel exposing (Model, SearchableInputState)
 import Requests
+import Array
 
 import Json.Decode as Json
 import Keyboard.Event exposing (decodeKey)
 import Bootstrap.Form.Input as Input
+import Debug exposing (log)
+
+
+getSelectedGroceryId : SearchableInputState -> Int
+getSelectedGroceryId state =
+  let
+    maybeArray =
+      case state.suggestions of
+        Nothing -> Nothing
+        Just suggestions ->
+          Just <| Array.fromList suggestions
+    maybeSuggestion =
+      case maybeArray of
+        Nothing -> Nothing
+        Just array ->
+          Array.get state.selected array
+  in
+    case maybeSuggestion of
+      Nothing -> -1 -- should never happen
+      Just suggestion -> suggestion.id
 
 
 searchableInputUpdate : Model -> SearchableInputMsg -> (Model, Cmd Msg)
@@ -29,12 +52,12 @@ searchableInputUpdate model msg =
   in
     case msg of
       FocusChanged state ->
-        ( { model | 
+        ( { model |
           searchableInputState = { oldState | focus = state, selected = 0 } }
         , Cmd.none )
 
       ItemHover index ->
-        ( { model | 
+        ( { model |
           searchableInputState = { oldState | selected = index } }
         , Cmd.none )
 
@@ -55,14 +78,16 @@ searchableInputUpdate model msg =
               (newState, cmd) =
                 if key == "Enter" && model.searchableInputState.focus then
                   ( { oldState | focus = False, selected = 0 }
-                  , Cmd.none ) -- TODO hämta grocery
+                  , Requests.getGroceryById
+                    (getSelectedGroceryId oldState)
+                    (\g -> SearchableInputEvent <| GotGrocery g) )
                 else
                   ( { oldState | selected = newSelected }, Cmd.none )
             in
               ( { model | searchableInputState = newState }, cmd )
 
       TextEntered string ->
-        (model, Requests.queryGrocery string)
+        ( model, Requests.queryGrocery string )
 
       GotSuggestions maybeGroceryQuerySuggestions ->
         let
@@ -71,13 +96,31 @@ searchableInputUpdate model msg =
               Ok groceryQuerySuggestions -> Just groceryQuerySuggestions
               Err _ -> Nothing
         in
-          ( { model | 
+          ( { model |
             searchableInputState = { oldState | suggestions = newSuggestions } }
           , Cmd.none )
 
+      GotGrocery result ->
+        let
+          newModel =
+            case result of
+              Ok grocery ->
+                ( { model |
+                  searchableInputState = { oldState | selectedGrocery = Just grocery } } )
+              Err _ -> model
+        in
+          ( newModel, Cmd.none )
 
-searchableInput : Model -> Html Msg
-searchableInput model =
+      ItemClicked id ->
+        ( model, Requests.getGroceryById id (\g -> SearchableInputEvent <| GotGrocery g ) )
+
+      ItemReset ->
+        ( { model | searchableInputState = { oldState | selectedGrocery = Nothing } }
+        , Task.attempt (\_ -> NoOp) <| Dom.focus "seachable-input-box" )
+
+
+searchableInput : Model -> String -> Html Msg
+searchableInput model className =
   let
     state = model.searchableInputState
 
@@ -93,9 +136,10 @@ searchableInput model =
       in
         li [ class itemClass
            , onMouseOver <| SearchableInputEvent <| ItemHover index
+           , onMouseDown <| SearchableInputEvent <| ItemClicked querySuggestion.id
            ]
            [ text querySuggestion.name ]
-    
+
     suggestions =
       let
         listDiv =
@@ -111,19 +155,30 @@ searchableInput model =
                   <| List.indexedMap listItem options ]
             else
               div [] []
-  in
-    div []
-      [ Input.text
-        [ Input.small
-        , Input.placeholder "Search for groceries"
-        , Input.attrs
-          [ class "groceries-input-box"
-          , onFocus <| SearchableInputEvent (FocusChanged True)
-          , onBlur <| SearchableInputEvent (FocusChanged False)
-          , on "keypress"
-            <| Json.map (\k -> SearchableInputEvent (KeyPressed k)) decodeKey 
-          , onInput <| (\t -> SearchableInputEvent (TextEntered t))
-          ]
+
+    textInput =
+      Input.text
+      [ Input.small
+      , Input.placeholder "Search for groceries"
+      , Input.attrs
+        [ class className
+        , id "seachable-input-box"
+        , onFocus <| SearchableInputEvent (FocusChanged True)
+        , onBlur <| SearchableInputEvent (FocusChanged False)
+        , on "keydown"
+          <| Json.map (\k -> SearchableInputEvent (KeyPressed k)) decodeKey
+        , onInput <| (\t -> SearchableInputEvent (TextEntered t))
         ]
-      , suggestions
       ]
+
+    selectedGroceryElement grocery =
+      div [ class "searchable-input-selected"
+          , onClick <| SearchableInputEvent ItemReset
+          ] [ text grocery.name ]
+
+    groceryInput =
+      case state.selectedGrocery of
+        Nothing -> textInput
+        Just grocery -> selectedGroceryElement grocery
+  in
+    div [] [ groceryInput, suggestions ]

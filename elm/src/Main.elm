@@ -67,6 +67,8 @@ init _ url key =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    GroxeryMsg.NoOp ->
+      ( model, Cmd.none )
     GroxeryMsg.LinkClicked urlRequest ->
       case urlRequest of
         Browser.Internal url ->

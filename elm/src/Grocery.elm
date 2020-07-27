@@ -1,7 +1,7 @@
 module Grocery exposing (..)
 
 
-type alias Grocery = 
+type alias Grocery =
   { id : Int
   , name : String
   , category : GroceryCategory

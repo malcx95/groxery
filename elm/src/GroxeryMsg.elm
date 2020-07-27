@@ -22,9 +22,13 @@ type SearchableInputMsg
   | KeyPressed (Maybe String)
   | TextEntered String
   | GotSuggestions (Result Http.Error (List GroceryQuerySuggestion))
+  | GotGrocery (Result Http.Error Grocery)
+  | ItemClicked Int
+  | ItemReset
 
 type Msg
-  = GotGroceryLists (Result Http.Error (List GroceryList))
+  = NoOp
+  | GotGroceryLists (Result Http.Error (List GroceryList))
   | LinkClicked Browser.UrlRequest
   | UrlChanged Url.Url
   | CreateGroceryList
