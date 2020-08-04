@@ -1,4 +1,4 @@
-module Elements.NewGroceryListEntryModal exposing (..)
+module Elements.NewGroceryListEntryModal exposing ( newGroceryListEntryModal )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -12,14 +12,42 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Form.Select as Select
 
+import Elements.SearchableInput exposing ( searchableInput )
+
+priorityItems : List (Select.Item Msg)
+priorityItems =
+  List.map (\x -> Select.item [ value x ] [ text x ])
+    [ "Low"
+    , "Medium"
+    , "High"
+    ]
+
+
+newGroceryListEntryForm : Model -> Html Msg
+newGroceryListEntryForm model =
+  Form.form []
+  [ Form.group []
+    [ Form.label [] [ text "Grocery" ]
+    , searchableInput model "groceries-input-box"
+    ]
+  , Form.group []
+    [ Form.label [] [ text "Priority" ]
+    , Select.select
+      [ Select.attrs [ class "form-input" ]
+      , Select.onChange GroxeryMsg.GroceryListEntryPrioritySelected
+      ] priorityItems
+    ]
+  ]
+-- TODO gör så att groceryID är en Maybe i den nya list entryn, så vi kan gråa ut/dölja
+-- amount-fältet när den inte är vald än
 
 newGroceryListEntryModal : Model -> Html Msg
 newGroceryListEntryModal model =
   Modal.config (GroxeryMsg.CloseModal Nothing)
     |> Modal.small
-    |> Modal.h5 [] [ text "New Grocery List Entry" ]
+    |> Modal.h5 [] [ text "New Entry" ]
     |> Modal.body []
-      [ text "wat"-- TODO body
+      [ newGroceryListEntryForm model -- TODO body
       ]
     |> Modal.footer []
       [ Button.button

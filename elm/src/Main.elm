@@ -15,6 +15,7 @@ import Grocery exposing ( Grocery
                         , emptyNewGrocery
                         , groceryToNewGrocery
                         , emptyNewGroceryListEntry
+                        , stringToPriority
                         )
 import Elements.SearchableInput exposing ( searchableInputUpdate )
 import Elements.ModalType as ModalType
@@ -139,7 +140,7 @@ update msg model =
         Err _ ->
           (model, Cmd.none)
 
-    GroxeryMsg.GroceryDropdownSelected selection ->
+    GroxeryMsg.GroceryCategoryDropdownSelected selection ->
       let
         newGrocery = model.newGrocery
         newCategory = stringToGroceryCategory selection
@@ -217,6 +218,17 @@ update msg model =
 
     GroxeryMsg.SearchableInputEvent simsg ->
       searchableInputUpdate model simsg
+
+    GroxeryMsg.GroceryListEntryPrioritySelected priorityString ->
+      let
+        newPriority = stringToPriority priorityString
+        maybeOldNewGroceryListEntry = model.newGroceryListEntry
+      in
+        case maybeOldNewGroceryListEntry of
+          Nothing -> ( model, Cmd.none )
+          Just entry ->
+            ( { model | newGroceryListEntry = Just { entry | priority = newPriority } }
+            , Cmd.none )
 
 
 openModal : Model -> ModalType.ModalType -> Model

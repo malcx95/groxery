@@ -35,7 +35,7 @@ type Msg
   | GroceryListFieldChanged String
   | GroceryListCreated (Result Http.Error (List GroceryList))
   | GroceryCreated (Result Http.Error ())
-  | GroceryDropdownSelected String
+  | GroceryCategoryDropdownSelected String
   | GroceryNameInputChanged String
   | GroceryByWeightChanged Bool
   | InitView
@@ -50,3 +50,4 @@ type Msg
   | GroceryListAddItemButtonClicked
   | GroceryListDoneButtonClicked
   | SearchableInputEvent SearchableInputMsg
+  | GroceryListEntryPrioritySelected String

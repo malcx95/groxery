@@ -157,3 +157,11 @@ priorityToInt p =
     Medium -> 1
     High -> 2
 
+
+stringToPriority : String -> Priority
+stringToPriority s =
+  case s of
+    "Low" -> Low
+    "Medium" -> Medium
+    "High" -> High
+    _ -> Low

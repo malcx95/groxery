@@ -1,4 +1,4 @@
-module Elements.NewGroceryModal exposing (..)
+module Elements.NewGroceryModal exposing ( newGroceryModal )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -48,7 +48,7 @@ newGroceryForm groceryModel =
   , Select.select
     [ Select.id "new-grocery-category"
     , Select.attrs [ class "form-input" ]
-    , Select.onChange GroxeryMsg.GroceryDropdownSelected
+    , Select.onChange GroxeryMsg.GroceryCategoryDropdownSelected
     ]
     groceryCategoryItems
   , Checkbox.checkbox
@@ -87,7 +87,7 @@ newGroceryModal groceryModel =
         [ Button.button
           [ Button.outlinePrimary
           , Button.attrs
-            [ onClick 
+            [ onClick
               (GroxeryMsg.CloseModal (Just modalResult)) ]
           ]
           [ text "Save" ]
