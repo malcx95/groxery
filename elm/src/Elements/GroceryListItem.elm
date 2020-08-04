@@ -44,8 +44,6 @@ groceryListItem model groceryListId entry =
 -- att radera items.
 
 
-
-
 editableGroceryListItem : Model -> NewGroceryListEntry -> Html Msg
 editableGroceryListItem model entry =
   div [ class "grocery-list-editable-item" ]
@@ -53,11 +51,11 @@ editableGroceryListItem model entry =
     ]
 
 
-newGroceryListItem : Int -> Html Msg
-newGroceryListItem groceryListId =
+newGroceryListItem : Html Msg
+newGroceryListItem =
   div
     [ class "new-grocery-check-list-item"
-    , onClick (GroceryListAddItemButtonClicked groceryListId)
+    , onClick GroceryListAddItemButtonClicked
     ]
     [ text "+"
     ]

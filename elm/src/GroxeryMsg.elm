@@ -47,6 +47,6 @@ type Msg
   | GroceryListEntryClicked GroceryListEntry
   | GroceryListEntryCheckedChanged (Result Http.Error (List GroceryList))
   | GroceryListEditButtonClicked Int
-  | GroceryListAddItemButtonClicked Int
+  | GroceryListAddItemButtonClicked
   | GroceryListDoneButtonClicked
   | SearchableInputEvent SearchableInputMsg

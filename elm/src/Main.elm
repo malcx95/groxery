@@ -204,8 +204,12 @@ update msg model =
     GroxeryMsg.GroceryListEditButtonClicked id ->
       ({model | editingGroceryList = Just id}, Cmd.none)
 
-    GroxeryMsg.GroceryListAddItemButtonClicked id ->
-      ({model | newGroceryListEntry = Just emptyNewGroceryListEntry}, Cmd.none)
+    GroxeryMsg.GroceryListAddItemButtonClicked ->
+      let
+        newModel =
+          { model | newGroceryListEntry = Just emptyNewGroceryListEntry }
+      in
+        (openModal model ModalType.NewGroceryListEntry, Cmd.none)
 
     GroxeryMsg.GroceryListDoneButtonClicked ->
       ({model | editingGroceryList = Nothing

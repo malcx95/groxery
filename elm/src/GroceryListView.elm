@@ -13,6 +13,7 @@ import GroceryModel exposing (Model)
 import Grocery exposing (..)
 import GroxeryMsg exposing (..)
 import Elements.GroceryListItem exposing (..)
+import Elements.NewGroceryListEntryModal exposing (newGroceryListEntryModal)
 
 
 sortGroceryListEntries : GroceryList -> List GroceryListEntry
@@ -44,7 +45,7 @@ groceryListBlock model groceryList =
       if groceryListIsInEditMode model groceryList.id then
         case model.newGroceryListEntry of
           Nothing ->
-            [ newGroceryListItem groceryList.id ]
+            [ newGroceryListItem ]
           Just newEntry ->
             [ editableGroceryListItem model newEntry ]
       else
@@ -97,4 +98,5 @@ view groceryModel =
     , p [] [ text "Here are your grocery lists." ]
     , viewGroceryLists groceryModel
     , newGroceryListElement groceryModel
+    , newGroceryListEntryModal groceryModel
     ]
